@@ -42,6 +42,18 @@ from astrbot.core.utils.history_saver import persist_agent_history
 from astrbot.core.utils.image_ref_utils import is_supported_image_ref
 from astrbot.core.utils.string_utils import normalize_and_dedupe_strings
 
+_DEFAULT_BACKGROUND_HISTORY_WRAP_PROMPT = (
+    "\n\nBellow is you and user previous conversation history:\n{history}"
+)
+_DEFAULT_BACKGROUND_EXECUTION_PROMPT = (
+    "Proceed according to your system instructions. "
+    "Output using same language as previous conversation. "
+    "If you need to deliver the result to the user immediately, "
+    "you MUST use `send_message_to_user` tool to send the message directly to the user, "
+    "otherwise the user will not see the result. "
+    "After completing your task, summarize and output your actions and results. "
+)
+
 
 class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
     @classmethod
@@ -480,11 +492,21 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             message_type=session.message_type,
         )
         cron_event.role = event.role
+        provider_settings = ctx.get_config().get("provider_settings", {})
+        if not isinstance(provider_settings, dict):
+            provider_settings = {}
+        proactive_cfg = provider_settings.get("proactive_capability", {})
+        if not isinstance(proactive_cfg, dict):
+            proactive_cfg = {}
+        background_prompts = proactive_cfg.get("background_prompts", {})
+        if not isinstance(background_prompts, dict):
+            background_prompts = {}
         config = MainAgentBuildConfig(
             tool_call_timeout=3600,
             streaming_response=ctx.get_config()
             .get("provider_settings", {})
             .get("stream", False),
+            provider_settings=provider_settings,
         )
 
         req = ProviderRequest()
@@ -495,22 +517,24 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             req.contexts = context
             context_dump = req._print_friendly_context()
             req.contexts = []
-            req.system_prompt += (
-                "\n\nBellow is you and user previous conversation history:\n"
-                f"{context_dump}"
+            history_wrap_prompt = str(
+                background_prompts.get("history_wrap_prompt", "")
+                or _DEFAULT_BACKGROUND_HISTORY_WRAP_PROMPT
             )
+            try:
+                req.system_prompt += history_wrap_prompt.format(history=context_dump)
+            except Exception:
+                req.system_prompt += _DEFAULT_BACKGROUND_HISTORY_WRAP_PROMPT.format(
+                    history=context_dump
+                )
 
         bg = json.dumps(extras["background_task_result"], ensure_ascii=False)
         req.system_prompt += BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT.format(
             background_task_result=bg
         )
-        req.prompt = (
-            "Proceed according to your system instructions. "
-            "Output using same language as previous conversation. "
-            "If you need to deliver the result to the user immediately, "
-            "you MUST use `send_message_to_user` tool to send the message directly to the user, "
-            "otherwise the user will not see the result. "
-            "After completing your task, summarize and output your actions and results. "
+        req.prompt = str(
+            background_prompts.get("execution_prompt", "")
+            or _DEFAULT_BACKGROUND_EXECUTION_PROMPT
         )
         if not req.func_tool:
             req.func_tool = ToolSet()

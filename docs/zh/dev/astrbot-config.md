@@ -75,6 +75,26 @@ AstrBot 默认配置如下：
         "streaming_segmented": False,
         "max_agent_step": 30,
         "tool_call_timeout": 60,
+        "tool_call_prompts": {
+            "follow_up_notice_prompt": "[SYSTEM NOTICE] ...",
+            "max_step_reached_prompt": "工具调用次数已达到上限...",
+            "requery_instruction_prompt": "You have decided to call tool(s): {tool_names}...",
+        },
+        "context_summary_prompts": {
+            "user_prompt": "Our previous history conversation summary: {summary}",
+            "ack_prompt": "Acknowledged the summary of our previous conversation history.",
+        },
+        "proactive_capability": {
+            "add_cron_tools": True,
+            "cron_prompts": {
+                "history_wrap_prompt": "...{history}...",
+                "execution_prompt": "...",
+            },
+            "background_prompts": {
+                "history_wrap_prompt": "...{history}...",
+                "execution_prompt": "...",
+            },
+        },
     },
     "provider_stt_settings": {
         "enable": False,
@@ -357,6 +377,36 @@ Agent 最大步骤数限制。默认为 `30`。模型的每次工具调用算作
 Added in `v4.3.5`
 
 工具调用的最大超时时间（秒），默认为 `60` 秒。
+
+#### `provider_settings.tool_call_prompts`
+
+工具调用相关提示词配置块。用于统一管理工具执行流程中的注入提示词。
+
+- `follow_up_notice_prompt`: 当工具执行期间收到用户追问时，注入到工具结果中的提示词。
+- `max_step_reached_prompt`: 当 Agent 达到工具调用轮次上限时注入的提示词。
+- `requery_instruction_prompt`: `skills_like` 模式下二阶段补参请求的指令模板，支持 `{tool_names}` 占位符。
+
+#### `provider_settings.context_summary_prompts`
+
+上下文压缩合成消息提示词配置块。
+
+- `user_prompt`: 压缩摘要注入到 `user` 消息的模板，支持 `{summary}` 占位符。
+- `ack_prompt`: 压缩摘要确认消息（`assistant`）模板。
+
+#### `provider_settings.proactive_capability.cron_prompts`
+
+主动任务（Cron）唤醒主 Agent 时的提示词模板。
+
+- `history_wrap_prompt`: 包装历史对话的模板，支持 `{history}` 占位符。
+- `execution_prompt`: Cron 执行阶段的主请求提示词。
+
+#### `provider_settings.proactive_capability.background_prompts`
+
+后台任务完成后唤醒主 Agent 时的提示词模板。
+
+- `history_wrap_prompt`: 包装历史对话的模板，支持 `{history}` 占位符。
+- `execution_prompt`: 后台任务执行阶段的主请求提示词。
+
 
 #### `provider_stt_settings`
 

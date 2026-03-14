@@ -75,6 +75,26 @@ The default AstrBot configuration is as follows:
         "streaming_segmented": False,
         "max_agent_step": 30,
         "tool_call_timeout": 60,
+        "tool_call_prompts": {
+            "follow_up_notice_prompt": "[SYSTEM NOTICE] ...",
+            "max_step_reached_prompt": "Tool-call step limit reached...",
+            "requery_instruction_prompt": "You have decided to call tool(s): {tool_names}...",
+        },
+        "context_summary_prompts": {
+            "user_prompt": "Our previous history conversation summary: {summary}",
+            "ack_prompt": "Acknowledged the summary of our previous conversation history.",
+        },
+        "proactive_capability": {
+            "add_cron_tools": True,
+            "cron_prompts": {
+                "history_wrap_prompt": "...{history}...",
+                "execution_prompt": "...",
+            },
+            "background_prompts": {
+                "history_wrap_prompt": "...{history}...",
+                "execution_prompt": "...",
+            },
+        },
     },
     "provider_stt_settings": {
         "enable": False,
@@ -357,6 +377,36 @@ Limit on the maximum number of Agent steps. Default is `30`. Each tool call by t
 Added in `v4.3.5`
 
 Maximum timeout for tool calls (seconds), default is `60` seconds.
+
+#### `provider_settings.tool_call_prompts`
+
+Prompt block for tool-calling flows. This groups all tool-related injection prompts in one place.
+
+- `follow_up_notice_prompt`: Injected into tool results when follow-up user messages arrive during tool execution.
+- `max_step_reached_prompt`: Injected when the agent reaches the tool-call step limit.
+- `requery_instruction_prompt`: Second-stage instruction template for `skills_like` mode, supports the `{tool_names}` placeholder.
+
+#### `provider_settings.context_summary_prompts`
+
+Prompt block for synthesized context-summary messages.
+
+- `user_prompt`: Template injected as a `user` message, supports `{summary}`.
+- `ack_prompt`: Template for the `assistant` acknowledgment message.
+
+#### `provider_settings.proactive_capability.cron_prompts`
+
+Prompt templates used when cron wake-up triggers the main agent.
+
+- `history_wrap_prompt`: Template wrapping prior conversation history, supports `{history}`.
+- `execution_prompt`: Main execution prompt for cron-triggered runs.
+
+#### `provider_settings.proactive_capability.background_prompts`
+
+Prompt templates used when background-task completion wakes the main agent.
+
+- `history_wrap_prompt`: Template wrapping prior conversation history, supports `{history}`.
+- `execution_prompt`: Main execution prompt for background-triggered runs.
+
 
 #### `provider_stt_settings`
 

@@ -29,6 +29,10 @@ class ContextConfig:
     """Number of recent messages to keep during LLM-based compression."""
     llm_compress_provider: "Provider | None" = None
     """LLM provider used for compression tasks. If None, truncation strategy is used."""
+    context_summary_user_prompt: str | None = None
+    """Template used to inject the generated summary as a user message. Supports {summary}."""
+    context_summary_ack_prompt: str | None = None
+    """Assistant acknowledgment text inserted after summary injection."""
     custom_token_counter: TokenCounter | None = None
     """Custom token counting method. If None, the default method is used."""
     custom_compressor: ContextCompressor | None = None

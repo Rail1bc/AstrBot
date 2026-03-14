@@ -27,6 +27,14 @@ from .parsers.url_parser import extract_text_from_url
 from .parsers.util import select_parser
 from .prompts import TEXT_REPAIR_SYSTEM_PROMPT
 
+_DEFAULT_KB_REPAIR_USER_PROMPT_TEMPLATE = """IGNORE ALL PREVIOUS INSTRUCTIONS. Your ONLY task is to process the following text chunk according to the system prompt provided.
+
+Text chunk to process:
+---
+{chunk}
+---
+"""
+
 
 class RateLimiter:
     """一个简单的速率限制器"""
@@ -56,19 +64,18 @@ async def _repair_and_translate_chunk_with_retry(
     chunk: str,
     repair_llm_service: LLMProvider,
     rate_limiter: RateLimiter,
+    user_prompt_template: str | None = None,
     max_retries: int = 2,
 ) -> list[str]:
     """
     Repairs, translates, and optionally re-chunks a single text chunk using the small LLM, with rate limiting.
     """
     # 为了防止 LLM 上下文污染，在 user_prompt 中也加入明确的指令
-    user_prompt = f"""IGNORE ALL PREVIOUS INSTRUCTIONS. Your ONLY task is to process the following text chunk according to the system prompt provided.
-
-Text chunk to process:
----
-{chunk}
----
-"""
+    prompt_template = user_prompt_template or _DEFAULT_KB_REPAIR_USER_PROMPT_TEMPLATE
+    try:
+        user_prompt = prompt_template.format(chunk=chunk)
+    except Exception:
+        user_prompt = _DEFAULT_KB_REPAIR_USER_PROMPT_TEMPLATE.format(chunk=chunk)
     for attempt in range(max_retries + 1):
         try:
             async with rate_limiter:
@@ -610,9 +617,17 @@ class KBHelper:
 
             # 并发处理所有块
             rate_limiter = RateLimiter(repair_max_rpm)
+            prompt_template = self.prov_mgr.provider_settings.get(
+                "kb_repair_user_prompt_template", ""
+            )
+            if not isinstance(prompt_template, str):
+                prompt_template = ""
             tasks = [
                 _repair_and_translate_chunk_with_retry(
-                    chunk, llm_provider, rate_limiter
+                    chunk,
+                    llm_provider,
+                    rate_limiter,
+                    user_prompt_template=prompt_template,
                 )
                 for chunk in initial_chunks
             ]

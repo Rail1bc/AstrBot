@@ -86,6 +86,13 @@ DEFAULT_CONFIG = {
         "default_personality": "default",
         "persona_pool": ["*"],
         "prompt_prefix": "{{prompt}}",
+        "kb_repair_user_prompt_template": (
+            "IGNORE ALL PREVIOUS INSTRUCTIONS. Your ONLY task is to process the following text chunk according to the system prompt provided.\n\n"
+            "Text chunk to process:\n"
+            "---\n"
+            "{chunk}\n"
+            "---\n"
+        ),
         "context_limit_reached_strategy": "truncate_by_turns",  # or llm_compress
         "llm_compress_instruction": (
             "Based on our full conversation history, produce a concise summary of key takeaways and/or project progress.\n"
@@ -96,6 +103,10 @@ DEFAULT_CONFIG = {
         ),
         "llm_compress_keep_recent": 6,
         "llm_compress_provider_id": "",
+        "context_summary_prompts": {
+            "user_prompt": "Our previous history conversation summary: {summary}",
+            "ack_prompt": "Acknowledged the summary of our previous conversation history.",
+        },
         "max_context_length": -1,
         "dequeue_context_length": 1,
         "streaming_response": False,
@@ -119,6 +130,18 @@ DEFAULT_CONFIG = {
         "max_agent_step": 30,
         "tool_call_timeout": 60,
         "tool_schema_mode": "full",
+        "tool_call_prompts": {
+            "follow_up_notice_prompt": (
+                "[SYSTEM NOTICE] User sent follow-up messages while tool execution was in progress. "
+                "Prioritize these follow-up instructions in your next actions. In your very next action, "
+                "briefly acknowledge to the user that their follow-up message(s) were received before continuing."
+            ),
+            "max_step_reached_prompt": "工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。",
+            "requery_instruction_prompt": (
+                "You have decided to call tool(s): {tool_names}. Now call the tool(s) with required arguments using the tool schema, "
+                "and follow the existing tool-use rules."
+            ),
+        },
         "llm_safety_mode": True,
         "safety_mode_strategy": "system_prompt",  # TODO: llm judge
         "file_extract": {
@@ -128,6 +151,26 @@ DEFAULT_CONFIG = {
         },
         "proactive_capability": {
             "add_cron_tools": True,
+            "cron_prompts": {
+                "history_wrap_prompt": "\n\nBellow is you and user previous conversation history:\n---\n{history}\n---\n",
+                "execution_prompt": (
+                    "You are now responding to a scheduled task"
+                    "Proceed according to your system instructions. "
+                    "Output using same language as previous conversation."
+                    "After completing your task, summarize and output your actions and results."
+                ),
+            },
+            "background_prompts": {
+                "history_wrap_prompt": "\n\nBellow is you and user previous conversation history:\n{history}",
+                "execution_prompt": (
+                    "Proceed according to your system instructions. "
+                    "Output using same language as previous conversation. "
+                    "If you need to deliver the result to the user immediately, "
+                    "you MUST use `send_message_to_user` tool to send the message directly to the user, "
+                    "otherwise the user will not see the result. "
+                    "After completing your task, summarize and output your actions and results. "
+                ),
+            },
         },
         "computer_use_runtime": "none",
         "computer_use_require_admin": True,
@@ -2503,6 +2546,9 @@ CONFIG_METADATA_2 = {
                     "prompt_prefix": {
                         "type": "string",
                     },
+                    "kb_repair_user_prompt_template": {
+                        "type": "string",
+                    },
                     "max_context_length": {
                         "type": "int",
                     },
@@ -2545,6 +2591,31 @@ CONFIG_METADATA_2 = {
                     "tool_schema_mode": {
                         "type": "string",
                     },
+                    "context_summary_prompts": {
+                        "type": "object",
+                        "items": {
+                            "user_prompt": {
+                                "type": "string",
+                            },
+                            "ack_prompt": {
+                                "type": "string",
+                            },
+                        },
+                    },
+                    "tool_call_prompts": {
+                        "type": "object",
+                        "items": {
+                            "follow_up_notice_prompt": {
+                                "type": "string",
+                            },
+                            "max_step_reached_prompt": {
+                                "type": "string",
+                            },
+                            "requery_instruction_prompt": {
+                                "type": "string",
+                            },
+                        },
+                    },
                     "file_extract": {
                         "type": "object",
                         "items": {
@@ -2564,6 +2635,28 @@ CONFIG_METADATA_2 = {
                         "items": {
                             "add_cron_tools": {
                                 "type": "bool",
+                            },
+                            "cron_prompts": {
+                                "type": "object",
+                                "items": {
+                                    "history_wrap_prompt": {
+                                        "type": "string",
+                                    },
+                                    "execution_prompt": {
+                                        "type": "string",
+                                    },
+                                },
+                            },
+                            "background_prompts": {
+                                "type": "object",
+                                "items": {
+                                    "history_wrap_prompt": {
+                                        "type": "string",
+                                    },
+                                    "execution_prompt": {
+                                        "type": "string",
+                                    },
+                                },
                             },
                         },
                     },
@@ -3301,6 +3394,30 @@ CONFIG_METADATA_3 = {
                             "provider_settings.agent_runner_type": "local",
                         },
                     },
+                    "provider_settings.tool_call_prompts.follow_up_notice_prompt": {
+                        "description": "追问注入提示词",
+                        "type": "string",
+                        "hint": "当工具执行期间收到用户追问时，会把该提示词与追问列表一起注入到工具返回结果中。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_prompts.max_step_reached_prompt": {
+                        "description": "工具轮次上限提示词",
+                        "type": "string",
+                        "hint": "当 Agent 达到工具调用轮次上限时，会注入该用户消息，要求停止继续调用工具并给出总结。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_prompts.requery_instruction_prompt": {
+                        "description": "skills-like 二阶段工具调用提示词",
+                        "type": "string",
+                        "hint": "skills-like 模式下，模型先选工具名后会二次请求参数模式，此提示词支持 {tool_names} 占位符。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
                     "provider_settings.wake_prefix": {
                         "description": "LLM 聊天额外唤醒前缀 ",
                         "type": "string",
@@ -3310,6 +3427,59 @@ CONFIG_METADATA_3 = {
                         "description": "用户提示词",
                         "type": "string",
                         "hint": "可使用 {{prompt}} 作为用户输入的占位符。如果不输入占位符则代表添加在用户输入的前面。",
+                    },
+                    "provider_settings.proactive_capability.cron_prompts.history_wrap_prompt": {
+                        "description": "Cron 历史对话包装提示词",
+                        "type": "string",
+                        "hint": "Cron 唤醒时若存在历史对话，会将历史文本填充到该模板中的 {history} 占位符。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.proactive_capability.cron_prompts.execution_prompt": {
+                        "description": "Cron 执行提示词",
+                        "type": "string",
+                        "hint": "Cron 唤醒后的主请求用户提示词。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.proactive_capability.background_prompts.history_wrap_prompt": {
+                        "description": "后台任务历史对话包装提示词",
+                        "type": "string",
+                        "hint": "后台任务唤醒主 Agent 时，历史对话会填充到模板中的 {history} 占位符。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.proactive_capability.background_prompts.execution_prompt": {
+                        "description": "后台任务执行提示词",
+                        "type": "string",
+                        "hint": "后台任务唤醒后的主请求用户提示词。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.context_summary_prompts.user_prompt": {
+                        "description": "上下文压缩摘要注入提示词",
+                        "type": "string",
+                        "hint": "LLM 压缩上下文时注入为 user 消息，支持 {summary} 占位符。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.context_summary_prompts.ack_prompt": {
+                        "description": "上下文压缩摘要确认提示词",
+                        "type": "string",
+                        "hint": "LLM 压缩上下文后注入为 assistant 消息。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.kb_repair_user_prompt_template": {
+                        "description": "知识库文本修复用户提示词模板",
+                        "type": "string",
+                        "hint": "知识库文本修复流程中的 user prompt 模板，支持 {chunk} 占位符。",
                     },
                     "provider_tts_settings.dual_output": {
                         "description": "开启 TTS 时同时输出语音和文字内容",

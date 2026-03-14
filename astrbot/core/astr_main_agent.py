@@ -1190,6 +1190,20 @@ async def build_main_agent(
     if action_type == "live":
         req.system_prompt += f"\n{LIVE_MODE_SYSTEM_PROMPT}\n"
 
+    provider_settings = (
+        config.provider_settings if isinstance(config.provider_settings, dict) else {}
+    )
+    tool_call_prompts = provider_settings.get("tool_call_prompts", {})
+    if not isinstance(tool_call_prompts, dict):
+        tool_call_prompts = {}
+    context_summary_prompts = provider_settings.get("context_summary_prompts", {})
+    if not isinstance(context_summary_prompts, dict):
+        context_summary_prompts = {}
+
+    def _resolve_tool_call_prompt(new_key: str) -> str:
+        prompt = tool_call_prompts.get(new_key, "")
+        return prompt if isinstance(prompt, str) else ""
+
     reset_coro = agent_runner.reset(
         provider=provider,
         request=req,
@@ -1206,6 +1220,25 @@ async def build_main_agent(
         truncate_turns=config.dequeue_context_length,
         enforce_max_turns=config.max_context_length,
         tool_schema_mode=config.tool_schema_mode,
+        tool_follow_up_notice_prompt=_resolve_tool_call_prompt(
+            "follow_up_notice_prompt"
+        ),
+        tool_max_step_reached_prompt=_resolve_tool_call_prompt(
+            "max_step_reached_prompt"
+        ),
+        tool_requery_instruction_prompt=_resolve_tool_call_prompt(
+            "requery_instruction_prompt"
+        ),
+        context_summary_user_prompt=(
+            context_summary_prompts.get("user_prompt", "")
+            if isinstance(context_summary_prompts.get("user_prompt", ""), str)
+            else ""
+        ),
+        context_summary_ack_prompt=(
+            context_summary_prompts.get("ack_prompt", "")
+            if isinstance(context_summary_prompts.get("ack_prompt", ""), str)
+            else ""
+        ),
         fallback_providers=_get_fallback_chat_providers(
             provider, plugin_context, config.provider_settings
         ),

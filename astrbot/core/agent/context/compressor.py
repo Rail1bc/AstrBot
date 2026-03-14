@@ -148,11 +148,20 @@ class LLMSummaryCompressor:
     Uses LLM to summarize the old conversation history, keeping the latest messages.
     """
 
+    _DEFAULT_SUMMARY_USER_PROMPT = (
+        "Our previous history conversation summary: {summary}"
+    )
+    _DEFAULT_SUMMARY_ACK_PROMPT = (
+        "Acknowledged the summary of our previous conversation history."
+    )
+
     def __init__(
         self,
         provider: "Provider",
         keep_recent: int = 4,
         instruction_text: str | None = None,
+        summary_user_prompt: str | None = None,
+        summary_ack_prompt: str | None = None,
         compression_threshold: float = 0.82,
     ) -> None:
         """Initialize the LLM summary compressor.
@@ -161,6 +170,8 @@ class LLMSummaryCompressor:
             provider: The LLM provider instance.
             keep_recent: The number of latest messages to keep (default: 4).
             instruction_text: Custom instruction for summary generation.
+            summary_user_prompt: Template for summary injection as user message. Supports {summary}.
+            summary_ack_prompt: Acknowledgment text injected as assistant message.
             compression_threshold: The compression trigger threshold (default: 0.82).
         """
         self.provider = provider
@@ -174,6 +185,10 @@ class LLMSummaryCompressor:
             "3. If there was an initial user goal, state it first and describe the current progress/status.\n"
             "4. Write the summary in the user's language.\n"
         )
+        self.summary_user_prompt = (
+            summary_user_prompt or self._DEFAULT_SUMMARY_USER_PROMPT
+        )
+        self.summary_ack_prompt = summary_ack_prompt or self._DEFAULT_SUMMARY_ACK_PROMPT
 
     def should_compress(
         self, messages: list[Message], current_tokens: int, max_tokens: int
@@ -227,16 +242,25 @@ class LLMSummaryCompressor:
         result = []
         result.extend(system_messages)
 
+        try:
+            summary_user_content = self.summary_user_prompt.format(
+                summary=summary_content
+            )
+        except Exception:
+            summary_user_content = self._DEFAULT_SUMMARY_USER_PROMPT.format(
+                summary=summary_content
+            )
+
         result.append(
             Message(
                 role="user",
-                content=f"Our previous history conversation summary: {summary_content}",
+                content=summary_user_content,
             )
         )
         result.append(
             Message(
                 role="assistant",
-                content="Acknowledged the summary of our previous conversation history.",
+                content=self.summary_ack_prompt,
             )
         )
 

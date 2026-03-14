@@ -81,6 +81,15 @@ class FollowUpTicket:
 
 
 class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
+    _DEFAULT_FOLLOW_UP_NOTICE_PROMPT = (
+        "[SYSTEM NOTICE] User sent follow-up messages while tool execution "
+        "was in progress. Prioritize these follow-up instructions in your next "
+        "actions. In your very next action, briefly acknowledge to the user "
+        "that their follow-up message(s) were received before continuing."
+    )
+    _DEFAULT_MAX_STEP_REACHED_PROMPT = "工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。"
+    _DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT = "You have decided to call tool(s): {tool_names}. Now call the tool(s) with required arguments using the tool schema, and follow the existing tool-use rules."
+
     def _get_persona_custom_error_message(self) -> str | None:
         """Read persona-level custom error message from event extras when available."""
         event = getattr(self.run_context.context, "event", None)
@@ -132,6 +141,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             llm_compress_instruction=self.llm_compress_instruction,
             llm_compress_keep_recent=self.llm_compress_keep_recent,
             llm_compress_provider=self.llm_compress_provider,
+            context_summary_user_prompt=kwargs.get("context_summary_user_prompt", ""),
+            context_summary_ack_prompt=kwargs.get("context_summary_ack_prompt", ""),
             custom_token_counter=self.custom_token_counter,
             custom_compressor=self.custom_compressor,
         )
@@ -158,6 +169,27 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         self._aborted = False
         self._pending_follow_ups: list[FollowUpTicket] = []
         self._follow_up_seq = 0
+        self._follow_up_notice_prompt = str(
+            kwargs.get(
+                "tool_follow_up_notice_prompt",
+                self._DEFAULT_FOLLOW_UP_NOTICE_PROMPT,
+            )
+            or self._DEFAULT_FOLLOW_UP_NOTICE_PROMPT
+        ).strip()
+        self._max_step_reached_prompt = str(
+            kwargs.get(
+                "tool_max_step_reached_prompt",
+                self._DEFAULT_MAX_STEP_REACHED_PROMPT,
+            )
+            or self._DEFAULT_MAX_STEP_REACHED_PROMPT
+        ).strip()
+        self._tool_requery_instruction_prompt = str(
+            kwargs.get(
+                "tool_requery_instruction_prompt",
+                self._DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT,
+            )
+            or self._DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT
+        ).strip()
 
         # These two are used for tool schema mode handling
         # We now have two modes:
@@ -331,13 +363,7 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         follow_up_lines = "\n".join(
             f"{idx}. {ticket.text}" for idx, ticket in enumerate(follow_ups, start=1)
         )
-        return (
-            "\n\n[SYSTEM NOTICE] User sent follow-up messages while tool execution "
-            "was in progress. Prioritize these follow-up instructions in your next "
-            "actions. In your very next action, briefly acknowledge to the user "
-            "that their follow-up message(s) were received before continuing.\n"
-            f"{follow_up_lines}"
-        )
+        return f"\n\n{self._follow_up_notice_prompt}\n{follow_up_lines}"
 
     def _merge_follow_up_notice(self, content: str) -> str:
         notice = self._consume_follow_up_notice()
@@ -640,7 +666,7 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             self.run_context.messages.append(
                 Message(
                     role="user",
-                    content="工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。",
+                    content=self._max_step_reached_prompt,
                 )
             )
             # 再执行最后一步
@@ -896,12 +922,15 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
                 contexts.append(msg.model_dump())  # type: ignore[call-arg]
             elif isinstance(msg, dict):
                 contexts.append(copy.deepcopy(msg))
-        instruction = (
-            "You have decided to call tool(s): "
-            + ", ".join(tool_names)
-            + ". Now call the tool(s) with required arguments using the tool schema, "
-            "and follow the existing tool-use rules."
-        )
+        tool_names_text = ", ".join(tool_names)
+        try:
+            instruction = self._tool_requery_instruction_prompt.format(
+                tool_names=tool_names_text
+            )
+        except Exception:
+            instruction = self._DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT.format(
+                tool_names=tool_names_text
+            )
         if contexts and contexts[0].get("role") == "system":
             content = contexts[0].get("content") or ""
             contexts[0]["content"] = f"{content}\n{instruction}"

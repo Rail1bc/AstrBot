@@ -22,6 +22,17 @@ if TYPE_CHECKING:
     from astrbot.core.star.context import Context
 
 
+_DEFAULT_CRON_HISTORY_WRAP_PROMPT = (
+    "\n\nBellow is you and user previous conversation history:\n---\n{history}\n---\n"
+)
+_DEFAULT_CRON_EXECUTION_PROMPT = (
+    "You are now responding to a scheduled task"
+    "Proceed according to your system instructions. "
+    "Output using same language as previous conversation."
+    "After completing your task, summarize and output your actions and results."
+)
+
+
 class CronJobManager:
     """Central scheduler for BasicCronJob and ActiveAgentCronJob."""
 
@@ -299,6 +310,15 @@ class CronJobManager:
         # judge user's role
         umo = cron_event.unified_msg_origin
         cfg = self.ctx.get_config(umo=umo)
+        provider_settings = cfg.get("provider_settings", {})
+        if not isinstance(provider_settings, dict):
+            provider_settings = {}
+        proactive_cfg = provider_settings.get("proactive_capability", {})
+        if not isinstance(proactive_cfg, dict):
+            proactive_cfg = {}
+        cron_prompts = proactive_cfg.get("cron_prompts", {})
+        if not isinstance(cron_prompts, dict):
+            cron_prompts = {}
         cron_payload = extras.get("cron_payload", {}) if extras else {}
         sender_id = cron_payload.get("sender_id")
         admin_ids = cfg.get("admins_id", [])
@@ -311,6 +331,7 @@ class CronJobManager:
             tool_call_timeout=3600,
             llm_safety_mode=False,
             streaming_response=False,
+            provider_settings=provider_settings,
         )
         req = ProviderRequest()
         conv = await _get_session_conv(event=cron_event, plugin_context=self.ctx)
@@ -321,21 +342,22 @@ class CronJobManager:
             req.contexts = context
             context_dump = req._print_friendly_context()
             req.contexts = []
-            req.system_prompt += (
-                "\n\nBellow is you and user previous conversation history:\n"
-                f"---\n"
-                f"{context_dump}\n"
-                f"---\n"
+            history_wrap_prompt = str(
+                cron_prompts.get("history_wrap_prompt", "")
+                or _DEFAULT_CRON_HISTORY_WRAP_PROMPT
             )
+            try:
+                req.system_prompt += history_wrap_prompt.format(history=context_dump)
+            except Exception:
+                req.system_prompt += _DEFAULT_CRON_HISTORY_WRAP_PROMPT.format(
+                    history=context_dump
+                )
         cron_job_str = json.dumps(extras.get("cron_job", {}), ensure_ascii=False)
         req.system_prompt += PROACTIVE_AGENT_CRON_WOKE_SYSTEM_PROMPT.format(
             cron_job=cron_job_str
         )
-        req.prompt = (
-            "You are now responding to a scheduled task"
-            "Proceed according to your system instructions. "
-            "Output using same language as previous conversation."
-            "After completing your task, summarize and output your actions and results."
+        req.prompt = str(
+            cron_prompts.get("execution_prompt", "") or _DEFAULT_CRON_EXECUTION_PROMPT
         )
         if not req.func_tool:
             req.func_tool = ToolSet()

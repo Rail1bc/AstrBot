@@ -31,11 +31,20 @@ class ContextManager:
         if config.custom_compressor:
             self.compressor = config.custom_compressor
         elif config.llm_compress_provider:
-            self.compressor = LLMSummaryCompressor(
+            summary_compressor = LLMSummaryCompressor(
                 provider=config.llm_compress_provider,
                 keep_recent=config.llm_compress_keep_recent,
                 instruction_text=config.llm_compress_instruction,
             )
+            if config.context_summary_user_prompt:
+                summary_compressor.summary_user_prompt = (
+                    config.context_summary_user_prompt
+                )
+            if config.context_summary_ack_prompt:
+                summary_compressor.summary_ack_prompt = (
+                    config.context_summary_ack_prompt
+                )
+            self.compressor = summary_compressor
         else:
             self.compressor = TruncateByTurnsCompressor(
                 truncate_turns=config.truncate_turns

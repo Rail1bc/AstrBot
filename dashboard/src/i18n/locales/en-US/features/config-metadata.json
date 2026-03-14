@@ -87,6 +87,7 @@
     },
     "knowledgebase": {
       "description": "Knowledge Base",
+      "hint": "AstrBot's external brain.",
       "kb_names": {
         "description": "Knowledge Base List",
         "hint": "Supports multiple selections"
@@ -106,6 +107,7 @@
     },
     "websearch": {
       "description": "Web Search",
+      "hint": "Give AstrBot internet access for up-to-date information.",
       "provider_settings": {
         "web_search": {
           "description": "Enable Web Search"
@@ -205,6 +207,26 @@
           "add_cron_tools": {
             "description": "Enable",
             "hint": "When enabled, related tools will be passed to the Agent to implement proactive Agent capabilities. You can tell AstrBot what to do at a future time, and it will be triggered on schedule to execute the task, and report the result back to you."
+          },
+          "cron_prompts": {
+            "history_wrap_prompt": {
+              "description": "Cron History Wrapper Template",
+              "hint": "Used when cron wake-up has prior conversation history; supports the {history} placeholder."
+            },
+            "execution_prompt": {
+              "description": "Cron Execution Prompt",
+              "hint": "Main user prompt used after cron wake-up."
+            }
+          },
+          "background_prompts": {
+            "history_wrap_prompt": {
+              "description": "Background History Wrapper Template",
+              "hint": "Used when background-task wake-up has prior conversation history; supports the {history} placeholder."
+            },
+            "execution_prompt": {
+              "description": "Background Execution Prompt",
+              "hint": "Main user prompt used after background-task wake-up."
+            }
           }
         }
       }
@@ -240,6 +262,16 @@
         "llm_compress_provider_id": {
           "description": "Model Provider ID for Context Compression",
           "hint": "When left empty, will fall back to the 'Truncate by Turns' strategy."
+        },
+        "context_summary_prompts": {
+          "user_prompt": {
+            "description": "Context Summary User Prompt",
+            "hint": "Injected as a user message during LLM context compression; supports the {summary} placeholder."
+          },
+          "ack_prompt": {
+            "description": "Context Summary Ack Prompt",
+            "hint": "Injected as an assistant acknowledgment message after context compression."
+          }
         }
       }
     },
@@ -316,6 +348,20 @@
             "Full schema"
           ]
         },
+        "tool_call_prompts": {
+          "follow_up_notice_prompt": {
+            "description": "Follow-up Injection Prompt",
+            "hint": "When users send follow-up messages during tool execution, this prompt is injected with the numbered follow-up list into tool result content."
+          },
+          "max_step_reached_prompt": {
+            "description": "Max Tool-Step Prompt",
+            "hint": "Injected when the agent reaches the tool-call step limit, asking it to stop calling tools and provide a summary."
+          },
+          "requery_instruction_prompt": {
+            "description": "Skills-like Requery Instruction Prompt",
+            "hint": "Used by the second-stage requery in skills-like mode; supports the {tool_names} placeholder."
+          }
+        },
         "streaming_response": {
           "description": "Streaming Output"
         },
@@ -334,6 +380,10 @@
         "prompt_prefix": {
           "description": "User Prompt",
           "hint": "You can use {{prompt}} as a placeholder for user input. If no placeholder is provided, it will be added before the user input."
+        },
+        "kb_repair_user_prompt_template": {
+          "description": "KB Repair User Prompt Template",
+          "hint": "User prompt template used in knowledge-base text repair; supports the {chunk} placeholder."
         },
         "reachability_check": {
           "description": "Provider Reachability Check",
