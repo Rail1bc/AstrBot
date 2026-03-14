@@ -362,6 +362,38 @@
                         "hint": "Используется на втором этапе в режиме skills-like; поддерживает плейсхолдер {tool_names}."
                     }
                 },
+                "proactive_capability": {
+                    "cron_prompts": {
+                        "history_wrap_prompt": {
+                            "description": "Шаблон обертки истории для Cron",
+                            "hint": "Используется при пробуждении по Cron, когда есть история диалога; поддерживает плейсхолдер {history}."
+                        },
+                        "execution_prompt": {
+                            "description": "Промпт выполнения Cron",
+                            "hint": "Основной промпт запроса после пробуждения по Cron."
+                        }
+                    },
+                    "background_prompts": {
+                        "history_wrap_prompt": {
+                            "description": "Шаблон обертки истории для фоновой задачи",
+                            "hint": "Используется, когда главного агента пробуждает фоновая задача и есть история диалога; поддерживает плейсхолдер {history}."
+                        },
+                        "execution_prompt": {
+                            "description": "Промпт выполнения фоновой задачи",
+                            "hint": "Основной промпт запроса после пробуждения фоновой задачей."
+                        }
+                    }
+                },
+                "context_summary_prompts": {
+                    "user_prompt": {
+                        "description": "Промпт внедрения сводки контекста (user)",
+                        "hint": "Добавляется как сообщение user при сжатии контекста LLM; поддерживает плейсхолдер {summary}."
+                    },
+                    "ack_prompt": {
+                        "description": "Промпт подтверждения сводки контекста (assistant)",
+                        "hint": "Добавляется как сообщение assistant после сжатия контекста LLM."
+                    }
+                },
                 "streaming_response": {
                     "description": "Потоковый вывод (Streaming)"
                 },

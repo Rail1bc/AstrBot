@@ -362,6 +362,38 @@
             "hint": "Used by the second-stage requery in skills-like mode; supports the {tool_names} placeholder."
           }
         },
+        "proactive_capability": {
+          "cron_prompts": {
+            "history_wrap_prompt": {
+              "description": "Cron History Wrapper Template",
+              "hint": "Used when cron wake-up has prior conversation history; supports the {history} placeholder."
+            },
+            "execution_prompt": {
+              "description": "Cron Execution Prompt",
+              "hint": "Main user prompt used after cron wake-up."
+            }
+          },
+          "background_prompts": {
+            "history_wrap_prompt": {
+              "description": "Background History Wrapper Template",
+              "hint": "Used when background-task wake-up has prior conversation history; supports the {history} placeholder."
+            },
+            "execution_prompt": {
+              "description": "Background Execution Prompt",
+              "hint": "Main user prompt used after background-task wake-up."
+            }
+          }
+        },
+        "context_summary_prompts": {
+          "user_prompt": {
+            "description": "Context Summary User Prompt",
+            "hint": "Injected as a user message during LLM context compression; supports the {summary} placeholder."
+          },
+          "ack_prompt": {
+            "description": "Context Summary Ack Prompt",
+            "hint": "Injected as an assistant acknowledgment message after context compression."
+          }
+        },
         "streaming_response": {
           "description": "Streaming Output"
         },

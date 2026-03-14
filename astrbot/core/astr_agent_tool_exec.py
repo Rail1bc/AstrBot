@@ -281,6 +281,9 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
         ctx = run_context.context.context
         event = run_context.context.event
         umo = event.unified_msg_origin
+        agent_extra = getattr(run_context.context, "extra", {})
+        if not isinstance(agent_extra, dict):
+            agent_extra = {}
 
         # Use per-subagent provider override if configured; otherwise fall back
         # to the current/default provider resolution.
@@ -303,9 +306,32 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
                 except Exception:
                     continue
 
-        prov_settings: dict = ctx.get_config(umo=umo).get("provider_settings", {})
+        prov_settings = ctx.get_config(umo=umo).get("provider_settings", {})
+        if not isinstance(prov_settings, dict):
+            prov_settings = {}
+        tool_call_prompts = prov_settings.get("tool_call_prompts", {})
+        if not isinstance(tool_call_prompts, dict):
+            tool_call_prompts = {}
         agent_max_step = int(prov_settings.get("max_agent_step", 30))
         stream = prov_settings.get("streaming_response", False)
+
+        def _resolve_tool_call_prompt(key: str) -> str:
+            extra_key = f"tool_{key}"
+            prompt_from_extra = agent_extra.get(extra_key, "")
+            if isinstance(prompt_from_extra, str) and prompt_from_extra:
+                return prompt_from_extra
+
+            prompt = tool_call_prompts.get(key, "")
+            if isinstance(prompt, str):
+                return prompt
+            return ""
+
+        follow_up_notice_prompt = _resolve_tool_call_prompt("follow_up_notice_prompt")
+        max_step_reached_prompt = _resolve_tool_call_prompt("max_step_reached_prompt")
+        requery_instruction_prompt = _resolve_tool_call_prompt(
+            "requery_instruction_prompt"
+        )
+
         llm_resp = await ctx.tool_loop_agent(
             event=event,
             chat_provider_id=prov_id,
@@ -316,6 +342,9 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             contexts=contexts,
             max_steps=agent_max_step,
             stream=stream,
+            tool_follow_up_notice_prompt=follow_up_notice_prompt,
+            tool_max_step_reached_prompt=max_step_reached_prompt,
+            tool_requery_instruction_prompt=requery_instruction_prompt,
         )
         yield mcp.types.CallToolResult(
             content=[mcp.types.TextContent(type="text", text=llm_resp.completion_text)]

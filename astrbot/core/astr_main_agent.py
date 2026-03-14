@@ -1204,6 +1204,13 @@ async def build_main_agent(
         prompt = tool_call_prompts.get(new_key, "")
         return prompt if isinstance(prompt, str) else ""
 
+    follow_up_notice_prompt = _resolve_tool_call_prompt("follow_up_notice_prompt")
+    max_step_reached_prompt = _resolve_tool_call_prompt("max_step_reached_prompt")
+    requery_instruction_prompt = _resolve_tool_call_prompt("requery_instruction_prompt")
+    astr_agent_ctx.extra["tool_follow_up_notice_prompt"] = follow_up_notice_prompt
+    astr_agent_ctx.extra["tool_max_step_reached_prompt"] = max_step_reached_prompt
+    astr_agent_ctx.extra["tool_requery_instruction_prompt"] = requery_instruction_prompt
+
     reset_coro = agent_runner.reset(
         provider=provider,
         request=req,
@@ -1220,15 +1227,9 @@ async def build_main_agent(
         truncate_turns=config.dequeue_context_length,
         enforce_max_turns=config.max_context_length,
         tool_schema_mode=config.tool_schema_mode,
-        tool_follow_up_notice_prompt=_resolve_tool_call_prompt(
-            "follow_up_notice_prompt"
-        ),
-        tool_max_step_reached_prompt=_resolve_tool_call_prompt(
-            "max_step_reached_prompt"
-        ),
-        tool_requery_instruction_prompt=_resolve_tool_call_prompt(
-            "requery_instruction_prompt"
-        ),
+        tool_follow_up_notice_prompt=follow_up_notice_prompt,
+        tool_max_step_reached_prompt=max_step_reached_prompt,
+        tool_requery_instruction_prompt=requery_instruction_prompt,
         context_summary_user_prompt=(
             context_summary_prompts.get("user_prompt", "")
             if isinstance(context_summary_prompts.get("user_prompt", ""), str)

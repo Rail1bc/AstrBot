@@ -190,6 +190,12 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             )
             or self._DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT
         ).strip()
+        logger.warning(
+            "[tool_call_prompts][runner.reset] Resolved runtime prompts. follow_up=%r, max_step=%r, requery=%r",
+            self._follow_up_notice_prompt,
+            self._max_step_reached_prompt,
+            self._tool_requery_instruction_prompt,
+        )
 
         # These two are used for tool schema mode handling
         # We now have two modes:
@@ -362,6 +368,11 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             ticket.resolved.set()
         follow_up_lines = "\n".join(
             f"{idx}. {ticket.text}" for idx, ticket in enumerate(follow_ups, start=1)
+        )
+        logger.warning(
+            "[tool_call_prompts][follow_up_notice] Applying follow-up notice prompt. prompt=%r, count=%d",
+            self._follow_up_notice_prompt,
+            len(follow_ups),
         )
         return f"\n\n{self._follow_up_notice_prompt}\n{follow_up_lines}"
 
@@ -663,6 +674,10 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             if self.req:
                 self.req.func_tool = None
             # 注入提示词
+            logger.warning(
+                "[tool_call_prompts][max_step] Applying max-step prompt. prompt=%r",
+                self._max_step_reached_prompt,
+            )
             self.run_context.messages.append(
                 Message(
                     role="user",
@@ -923,11 +938,20 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             elif isinstance(msg, dict):
                 contexts.append(copy.deepcopy(msg))
         tool_names_text = ", ".join(tool_names)
+        logger.warning(
+            "[tool_call_prompts][requery] Applying requery instruction template. template=%r, tool_names=%r",
+            self._tool_requery_instruction_prompt,
+            tool_names_text,
+        )
         try:
             instruction = self._tool_requery_instruction_prompt.format(
                 tool_names=tool_names_text
             )
-        except Exception:
+        except Exception as e:
+            logger.warning(
+                "[tool_call_prompts][requery] Template format failed, fallback to default template. err=%s",
+                e,
+            )
             instruction = self._DEFAULT_TOOL_REQUERY_INSTRUCTION_PROMPT.format(
                 tool_names=tool_names_text
             )

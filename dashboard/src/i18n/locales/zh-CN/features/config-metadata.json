@@ -362,6 +362,38 @@
             "hint": "Skills-like 模式下，模型先选工具名后会二次请求参数模式；支持 {tool_names} 占位符。"
           }
         },
+        "proactive_capability": {
+          "cron_prompts": {
+            "history_wrap_prompt": {
+              "description": "Cron 历史对话包装模板",
+              "hint": "Cron 唤醒且存在历史对话时使用；支持 {history} 占位符。"
+            },
+            "execution_prompt": {
+              "description": "Cron 执行提示词",
+              "hint": "Cron 唤醒后的主请求提示词。"
+            }
+          },
+          "background_prompts": {
+            "history_wrap_prompt": {
+              "description": "后台任务历史对话包装模板",
+              "hint": "后台任务唤醒主 Agent 且存在历史对话时使用；支持 {history} 占位符。"
+            },
+            "execution_prompt": {
+              "description": "后台任务执行提示词",
+              "hint": "后台任务唤醒后的主请求提示词。"
+            }
+          }
+        },
+        "context_summary_prompts": {
+          "user_prompt": {
+            "description": "上下文压缩摘要注入提示词",
+            "hint": "LLM 压缩上下文时注入为 user 消息；支持 {summary} 占位符。"
+          },
+          "ack_prompt": {
+            "description": "上下文压缩摘要确认提示词",
+            "hint": "LLM 压缩上下文后注入为 assistant 消息。"
+          }
+        },
         "streaming_response": {
           "description": "流式输出"
         },
