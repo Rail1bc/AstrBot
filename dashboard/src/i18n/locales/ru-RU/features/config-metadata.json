@@ -162,14 +162,6 @@
                     "booter": {
                         "description": "Драйвер среды песочницы"
                     },
-                    "shipyard_neo_file_path_rule": {
-                        "description": "Правило путей файлов Shipyard Neo",
-                        "hint": "Правило путей файлов Shipyard Neo, добавляется в конец системного промпта."
-                    },
-                    "shipyard_neo_skill_lifecycle_workflow": {
-                        "description": "Workflow жизненного цикла навыков Shipyard Neo",
-                        "hint": "Workflow жизненного цикла навыков Shipyard Neo, добавляется в конец системного промпта."
-                    },
                     "shipyard_neo_endpoint": {
                         "description": "Эндпоинт Shipyard Neo API",
                         "hint": "Адрес Bay API, по умолчанию http://127.0.0.1:8114."
@@ -222,14 +214,6 @@
         "proactive_capability": {
             "description": "Проактивный агент",
             "hint": "AstrBot будет просыпаться, выполнять ваши задачи и сообщать о результатах. См. [Проактивный агент](https://docs.astrbot.app/en/use/proactive-agent.html)",
-            "background_history_wrap_prompt": {
-                "description": "Промпт обертки истории фоновой задачи",
-                "hint": "Фоновая задача"
-            },
-            "background_execution_prompt": {
-                "description": "Промпт выполнения фоновой задачи",
-                "hint": "Фоновая задача"
-            },
             "provider_settings": {
                 "proactive_capability": {
                     "add_cron_tools": {
@@ -291,14 +275,6 @@
         },
         "others": {
             "description": "Прочие настройки",
-            "llm_safety_mode_system_prompt": {
-                "description": "Промпт безопасного режима",
-                "hint": "Текст безопасного режима, добавляемый в конец системного промпта."
-            },
-            "live_mode_system_prompt": {
-                "description": "Промпт режима live",
-                "hint": "Текст режима live, добавляемый в конец системного промпта."
-            },
             "provider_settings": {
                 "display_reasoning_text": {
                     "description": "Отображать процесс рассуждения (Reasoning)"
@@ -310,6 +286,10 @@
                 "safety_mode_strategy": {
                     "description": "Стратегия безопасного режима",
                     "hint": "Как применять защитные фильтры."
+                },
+                "llm_safety_mode_system_prompt": {
+                    "description": "Промпт безопасного режима",
+                    "hint": "Когда стратегия безопасного режима выбрана как «Системный промпт», этот текст добавляется в начало системного промпта."
                 },
                 "identifier": {
                     "description": "Идентификация пользователя",
@@ -408,6 +388,10 @@
                 "prompt_prefix": {
                     "description": "Промпт пользователя",
                     "hint": "Вы можете использовать {{prompt}} как заполнитель для ввода. Если заполнитель не указан, он будет добавлен перед текстом пользователя."
+                },
+                "live_mode_system_prompt": {
+                    "description": "Системный промпт режима live",
+                    "hint": "Когда action_type == live, этот текст добавляется в конец системного промпта."
                 },
                 "reachability_check": {
                     "description": "Проверка доступности провайдеров",

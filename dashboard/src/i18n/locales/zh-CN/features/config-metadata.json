@@ -164,14 +164,6 @@
           "booter": {
             "description": "沙箱环境驱动器"
           },
-          "shipyard_neo_file_path_rule": {
-            "description": "Shipyard Neo File Path Rule",
-            "hint": "Shipyard Neo 文件路径规则，注入到系统提示词末尾。"
-          },
-          "shipyard_neo_skill_lifecycle_workflow": {
-            "description": "Shipyard Neo Skill Lifecycle Workflow",
-            "hint": "Shipyard Neo Skill Lifecycle Workflow。，注入到系统提示词末尾"
-          },
           "shipyard_neo_endpoint": {
             "description": "Shipyard Neo API Endpoint",
             "hint": "Shipyard Neo(Bay) 服务的 API 地址，默认 http://127.0.0.1:8114。"
@@ -224,14 +216,6 @@
     "proactive_capability": {
       "description": "主动型能力",
       "hint": "让 AstrBot 能够在某一时刻自动唤醒，帮你完成任务。详见: [主动型 Agent](https://docs.astrbot.app/use/proactive-agent.html)。",
-      "background_history_wrap_prompt": {
-        "description": "后台任务历史包装提示词",
-        "hint": "后台任务"
-      },
-      "background_execution_prompt": {
-        "description": "后台任务执行提示词",
-        "hint": "后台任务"
-      },
       "provider_settings": {
         "proactive_capability": {
           "add_cron_tools": {
@@ -293,14 +277,6 @@
     },
     "others": {
       "description": "其他配置",
-      "llm_safety_mode_system_prompt": {
-        "description": "健康模式提示词",
-        "hint": "健康模式的提示文案，注入到系统提示词末尾。"
-      },
-      "live_mode_system_prompt": {
-        "description": "live模式提示词",
-        "hint": "live 模式的提示文案，注入到系统提示词末尾。"
-      },
       "provider_settings": {
         "display_reasoning_text": {
           "description": "显示思考内容"
@@ -396,28 +372,6 @@
           "description": "工具调用轮数上限提示文案",
           "hint": "当工具调用达到最大轮数时的提示文案"
         },
-        "tool_call_prompts": {
-          "tool_call_prompt": {
-            "description": "工具调用注入提示词",
-            "hint": "当存在可用工具，在系统提示词末尾注入该文案"
-          },
-          "tool_call_prompt_skills_like_mode": {
-            "description": "Skills-like 模式工具调用提示词",
-            "hint": "当存在可用工具且为 Skills-like 模式，在系统提示词末尾注入该文案"
-          },
-          "follow_up_notice_prompt": {
-            "description": "追问注入提示词",
-            "hint": "当工具执行期间收到用户追问时，会把该提示词与追问列表一起注入到工具返回结果中。"
-          },
-          "max_step_reached_prompt": {
-            "description": "工具轮次上限提示词",
-            "hint": "当 Agent 达到工具调用轮次上限时，会注入该提示词，要求停止继续调用工具并给出总结。"
-          },
-          "requery_instruction_prompt": {
-            "description": "Skills-like 二阶段工具调用提示词",
-            "hint": "Skills-like 模式下，模型先选工具名后会二次请求参数模式；支持 {tool_names} 占位符。"
-          }
-        },
         "streaming_response": {
           "description": "流式输出"
         },
@@ -440,10 +394,6 @@
         "live_mode_system_prompt": {
           "description": "live模式系统提示词",
           "hint": "action_type == live 时，在系统提示词末尾注入该文案。"
-        },
-        "kb_repair_user_prompt_template": {
-          "description": "知识库文本修复用户提示词模板",
-          "hint": "知识库文本修复流程中的 user prompt 模板；支持 {chunk} 占位符。"
         },
         "reachability_check": {
           "description": "提供商可达性检测",

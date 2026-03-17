@@ -162,14 +162,6 @@
           "booter": {
             "description": "Sandbox Environment Driver"
           },
-          "shipyard_neo_file_path_rule": {
-            "description": "Shipyard Neo File Path Rule",
-            "hint": "Shipyard Neo file path rule, appended to the end of the system prompt."
-          },
-          "shipyard_neo_skill_lifecycle_workflow": {
-            "description": "Shipyard Neo Skill Lifecycle Workflow",
-            "hint": "Shipyard Neo Skill Lifecycle Workflow, appended to the end of the system prompt."
-          },
           "shipyard_neo_endpoint": {
             "description": "Shipyard Neo API Endpoint",
             "hint": "Bay API address, default http://127.0.0.1:8114."
@@ -222,14 +214,6 @@
     "proactive_capability": {
       "description": "Proactive Agent",
       "hint": "AstrBot will wake up, run your tasks, and deliver the results to you. See [Proactive Agent](https://docs.astrbot.app/en/use/proactive-agent.html)",
-      "background_history_wrap_prompt": {
-        "description": "Background History Wrap Prompt",
-        "hint": "Background task"
-      },
-      "background_execution_prompt": {
-        "description": "Background Execution Prompt",
-        "hint": "Background task"
-      },
       "provider_settings": {
         "proactive_capability": {
           "add_cron_tools": {
@@ -291,14 +275,6 @@
     },
     "others": {
       "description": "Other Settings",
-      "llm_safety_mode_system_prompt": {
-        "description": "Healthy Mode Prompt",
-        "hint": "Prompt text for healthy mode, appended to the end of the system prompt."
-      },
-      "live_mode_system_prompt": {
-        "description": "Live Mode Prompt",
-        "hint": "Prompt text for live mode, appended to the end of the system prompt."
-      },
       "provider_settings": {
         "display_reasoning_text": {
           "description": "Display Reasoning Content"
@@ -310,6 +286,10 @@
         "safety_mode_strategy": {
           "description": "Healthy Mode Strategy",
           "hint": "How to apply healthy mode."
+        },
+        "llm_safety_mode_system_prompt": {
+          "description": "Healthy Mode Prompt",
+          "hint": "When the healthy mode strategy is set to 'System Prompt', this text is injected at the beginning of the system prompt."
         },
         "identifier": {
           "description": "User Identification",
@@ -408,6 +388,10 @@
         "prompt_prefix": {
           "description": "User Prompt",
           "hint": "You can use {{prompt}} as a placeholder for user input. If no placeholder is provided, it will be added before the user input."
+        },
+        "live_mode_system_prompt": {
+          "description": "Live Mode System Prompt",
+          "hint": "When action_type == live, this text is injected at the end of the system prompt."
         },
         "reachability_check": {
           "description": "Provider Reachability Check",
