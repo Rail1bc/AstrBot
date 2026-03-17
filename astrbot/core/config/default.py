@@ -182,8 +182,44 @@ DEFAULT_CONFIG = {
         },
         "proactive_capability": {
             "add_cron_tools": True,
-            "background_history_wrap_prompt": "",
-            "background_execution_prompt": "",
+            "background_history_wrap_prompt": (
+                "\n\nBelow is your and the user's previous conversation history:"
+                "---\n{context_dump}\n---\n"
+            ),
+            "background_execution_prompt": (
+                "You are an autonomous proactive agent.\n\n"
+                "You are awakened by the completion of a background task you initiated earlier.\n"
+                "You are given:"
+                "1. A description of the background task you initiated.\n"
+                "2. The result of the background task.\n"
+                "3. Historical conversation context between you and the user.\n"
+                "4. Your available tools and skills.\n"
+                "# IMPORTANT RULES\n"
+                "1. This is NOT a chat turn. Do NOT greet the user. Do NOT ask the user questions unless strictly necessary. Do NOT respond if no meaningful action is required."
+                "2. Use historical conversation and memory to understand you and user's relationship, preferences, and context."
+                "3. If messaging the user: Explain WHY you are contacting them; Reference the background task implicitly (not technical details)."
+                "4. You can use your available tools and skills to finish the task if needed.\n"
+                "5. Use `send_message_to_user` tool to send message to user if needed."
+                "# BACKGROUND TASK CONTEXT\n"
+                "The following object describes the background task that completed:\n"
+                "{background_task_result}"
+            ),
+            "background_task_work_user_prompt": (
+                "Proceed according to your system instructions. "
+                "Output using same language as previous conversation. "
+                "If you need to deliver the result to the user immediately, "
+                "you MUST use `send_message_to_user` tool to send the message directly to the user, "
+                "otherwise the user will not see the result. "
+                "After completing your task, summarize and output your actions and results. "
+            ),
+            "background_task_summary_note": (
+                "[BackgroundTask] {summary_name} "
+                "(task_id={task_id}) finished. "
+                "Result: {result}"
+            ),
+            "background_task_summary_note_result": (
+                "I finished the task, here is the result: {result}"
+            ),
         },
         "computer_use_runtime": "none",
         "computer_use_require_admin": True,
@@ -3277,12 +3313,27 @@ CONFIG_METADATA_3 = {
                     "provider_settings.proactive_capability.background_history_wrap_prompt": {
                         "description": "后台任务历史包装提示词",
                         "type": "string",
-                        "hint": "后台任务",
+                        "hint": "后台任务历史包装提示文案，支持 {context_dump} 占位符。",
                     },
                     "provider_settings.proactive_capability.background_execution_prompt": {
                         "description": "后台任务执行提示词",
                         "type": "string",
-                        "hint": "后台任务",
+                        "hint": "后台任务执行提示文案，支持 {background_task_result} 占位符。",
+                    },
+                    "provider_settings.proactive_capability.background_task_work_user_prompt": {
+                        "description": "后台任务执行唤醒提示词",
+                        "type": "string",
+                        "hint": "后台任务执行唤醒提示文案",
+                    },
+                    "provider_settings.proactive_capability.background_task_summary_note": {
+                        "description": "后台任务笔记文案",
+                        "type": "string",
+                        "hint": "后台任务完成笔记文案，支持 {summary_name} {task_id} {result} 占位符。",
+                    },
+                    "provider_settings.proactive_capability.background_task_summary_note_result": {
+                        "description": "后台任务结果提示词",
+                        "type": "string",
+                        "hint": "后台任务结果提示文案，支持 {result} 占位符。",
                     },
                 },
                 "condition": {

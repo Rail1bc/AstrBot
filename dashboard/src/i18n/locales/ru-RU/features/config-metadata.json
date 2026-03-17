@@ -227,6 +227,18 @@
                     "background_execution_prompt": {
                         "description": "Промпт выполнения фоновой задачи",
                         "hint": "Системный промпт при пробуждении результатом фоновой задачи. Поддерживает плейсхолдер {background_task_result}."
+                    },
+                    "background_task_work_user_prompt": {
+                        "description": "Промпт пробуждения выполнения фоновой задачи",
+                        "hint": "Текст промпта пробуждения при выполнении фоновой задачи"
+                    },
+                    "background_task_summary_note": {
+                        "description": "Текст заметки фоновой задачи",
+                        "hint": "Текст заметки после завершения фоновой задачи. Поддерживает плейсхолдеры {summary_name} {task_id} {result}."
+                    },
+                    "background_task_summary_note_result": {
+                        "description": "Промпт результата фоновой задачи",
+                        "hint": "Текст промпта результата фоновой задачи. Поддерживает плейсхолдер {result}."
                     }
                 }
             }

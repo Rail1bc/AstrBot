@@ -229,6 +229,18 @@
           "background_execution_prompt": {
             "description": "后台任务执行提示词",
             "hint": "后台任务唤醒后的系统提示词；支持 {background_task_result} 占位符。"
+          },
+          "background_task_work_user_prompt": {
+            "description": "后台任务执行唤醒提示词.",
+            "hint": "后台任务执行唤醒提示文案"
+          },
+          "background_task_summary_note": {
+            "description": "后台任务笔记文案",
+            "hint": "后台任务完成笔记文案，支持 {summary_name} {task_id} {result} 占位符。"
+          },
+          "background_task_summary_note_result": {
+            "description": "后台任务结果提示词",
+            "hint": "后台任务结果提示文案，支持 {result} 占位符。"
           }
         }
       }

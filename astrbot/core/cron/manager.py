@@ -327,7 +327,8 @@ class CronJobManager:
             context_dump = req._print_friendly_context()
             req.contexts = []
             history_wrap_prompt = self.ctx.get_config().get(
-                "cron_history_wrap_prompt", ""
+                "cron_history_wrap_prompt",
+                CONVERSATION_HISTORY_INJECT_PREFIX
             )
             try:
                 req.system_prompt += history_wrap_prompt.format(
@@ -352,9 +353,9 @@ class CronJobManager:
             req.system_prompt += PROACTIVE_AGENT_CRON_WOKE_SYSTEM_PROMPT.format(
                 cron_job=cron_job_str
             )
-        req.prompt = (
-            self.ctx.get_config().get("cron_task_work_user_prompt", "")
-            or CRON_TASK_WOKE_USER_PROMPT
+        req.prompt = self.ctx.get_config().get(
+            "cron_task_work_user_prompt",
+            CRON_TASK_WOKE_USER_PROMPT
         )
         if not req.func_tool:
             req.func_tool = ToolSet()

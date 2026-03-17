@@ -227,6 +227,18 @@
           "background_execution_prompt": {
             "description": "Background Execution Prompt",
             "hint": "System prompt for background task wake-up. Supports the {background_task_result} placeholder."
+          },
+          "background_task_work_user_prompt": {
+            "description": "Background Task Wake-up Prompt",
+            "hint": "Wake-up prompt text for background task execution."
+          },
+          "background_task_summary_note": {
+            "description": "Background Task Summary Note",
+            "hint": "Summary note text after background task completion. Supports {summary_name} {task_id} {result} placeholders."
+          },
+          "background_task_summary_note_result": {
+            "description": "Background Task Result Prompt",
+            "hint": "Prompt text for background task result. Supports the {result} placeholder."
           }
         }
       }

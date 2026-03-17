@@ -571,7 +571,8 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             context_dump = req._print_friendly_context()
             req.contexts = []
             history_wrap_prompt = proactive_cfg.get(
-                "background_history_wrap_prompt", ""
+                "background_history_wrap_prompt",
+                CONVERSATION_HISTORY_INJECT_PREFIX
             )
             if history_wrap_prompt:
                 try:
@@ -593,7 +594,8 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
 
         bg = json.dumps(extras["background_task_result"], ensure_ascii=False)
         background_execution_prompt = proactive_cfg.get(
-            "background_execution_prompt", ""
+            "background_execution_prompt",
+            BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT
         )
         if background_execution_prompt:
             try:
@@ -612,7 +614,10 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             req.system_prompt += BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT.format(
                 background_task_result=bg
             )
-        req.prompt = BACKGROUND_TASK_WOKE_USER_PROMPT
+        req.prompt = proactive_cfg.get(
+            "background_task_work_user_prompt",
+            BACKGROUND_TASK_WOKE_USER_PROMPT
+        )
         if not req.func_tool:
             req.func_tool = ToolSet()
         req.func_tool.add_tool(SEND_MESSAGE_TO_USER_TOOL)
@@ -630,15 +635,29 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             pass
         llm_resp = runner.get_final_llm_resp()
         task_meta = extras.get("background_task_result", {})
-        summary_note = (
-            f"[BackgroundTask] {summary_name} "
-            f"(task_id={task_meta.get('task_id', task_id)}) finished. "
-            f"Result: {task_meta.get('result') or result_text or 'no content'}"
-        )
-        if llm_resp and llm_resp.completion_text:
-            summary_note += (
-                f"I finished the task, here is the result: {llm_resp.completion_text}"
+
+        background_task_summary_note = proactive_cfg.get("background_task_summary_note", "")
+        try:
+            summary_note = background_task_summary_note.format(
+                summary_name=summary_name,
+                task_id=task_id,
+                result=result,
             )
+        except Exception:
+            summary_note = (
+                f"[BackgroundTask] {summary_name} "
+                f"(task_id={task_meta.get('task_id', task_id)}) finished. "
+                f"Result: {task_meta.get('result') or result_text or 'no content'}"
+            )
+        if llm_resp and llm_resp.completion_text:
+            background_task_summary_note_result = proactive_cfg.get(
+                "background_task_summary_note_result", ""
+            )
+            try:
+                result = background_task_summary_note_result.format(result=llm_resp.completion_text)
+            except Exception:
+                result = f"I finished the task, here is the result: {llm_resp.completion_text}"
+            summary_note += result
         await persist_agent_history(
             ctx.conversation_manager,
             event=cron_event,
