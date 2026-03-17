@@ -3243,16 +3243,6 @@ CONFIG_METADATA_3 = {
                         "type": "bool",
                         "hint": "启用后，将会传递给 Agent 相关工具来实现主动型 Agent。你可以告诉 AstrBot 未来某个时间要做的事情，它将被定时触发然后执行任务。",
                     },
-                    "cron_history_wrap_prompt": {
-                        "description": "定时任务历史包装提示词",
-                        "type": "string",
-                        "hint": "定时任务",
-                    },
-                    "cron_execution_prompt": {
-                        "description": "定时任务执行提示词",
-                        "type": "string",
-                        "hint": "定时任务",
-                    },
                     "background_history_wrap_prompt": {
                         "description": "后台任务历史包装提示词",
                         "type": "string",
@@ -3993,6 +3983,31 @@ CONFIG_METADATA_3_SYSTEM = {
                         "type": "string",
                         "hint": "控制台输出日志的级别。",
                         "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                    },
+                    "cron_history_wrap_prompt": {
+                        "description": "定时任务历史包装提示词",
+                        "type": "string",
+                        "hint": "定时任务历史包装提示文案，支持 {context_dump} 占位符。",
+                    },
+                    "cron_execution_prompt": {
+                        "description": "定时任务执行提示词",
+                        "type": "string",
+                        "hint": "定时任务执行提示文案，支持 {cron_job} 占位符。",
+                    },
+                    "cron_task_work_user_prompt":{
+                        "description": "定时任务执行唤醒提示词",
+                        "type": "string",
+                        "hint": "定时任务执行唤醒提示文案。",
+                    },
+                    "cron_task_summary_note":{
+                        "description": "定时任务笔记文案",
+                        "type": "string",
+                        "hint": "定时任务完成笔记文案，支持 {name_or_id} {description} {started_at} 占位符。",
+                    },
+                    "cron_task_summary_note_result":{
+                        "description": "定时任务结果提示词",
+                        "type": "string",
+                        "hint": "定时任务结果提示文案，支持 {result} 占位符。",
                     },
                     "dashboard.ssl.enable": {
                         "description": "启用 WebUI HTTPS",
