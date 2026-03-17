@@ -195,26 +195,20 @@
           "shipyard_max_sessions": {
             "description": "Shipyard Ship 会话复用上限",
             "hint": "决定了一个实例承载的最大会话数量。"
-          },
-          "shipyard_neo_file_path_rule": {
-            "description": "Shipyard Neo 文件路径规则",
-            "hint": "环境选择 Shipyard Neo 时，在系统提示词末尾注入该文案。"
-          },
-          "shipyard_neo_skill_lifecycle_workflow": {
-            "description": "Shipyard Neo Skill 生命周期工作流",
-            "hint": "环境选择 Shipyard Neo 时，在系统提示词末尾注入该文案。"
-          },
+          }
+        },
+        "local": {
           "local_mode_prompt": {
             "description": "本地模式提示词",
-            "hint": "当运行环境选择 local 时，在系统提示词末尾注入该文案。支持{system_name}占位符。"
+            "hint": "当运行环境选择 local 时，在系统提示词末尾注入该文案。支持 {system_name} 占位符。"
           },
           "local_shell_windows_hint": {
-            "description": "本地模式 Shell 提示",
-            "hint": "当运行环境选择 local 且系统为 windows 时，{shell_hint} 占位符的内容。"
+            "description": "本地模式命令行提示词（Windows）",
+            "hint": "当系统为 Windows 时，注入到系统提示词末尾。"
           },
           "local_shell_unix_like_hint": {
-            "description": "本地模式 Shell 提示",
-            "hint": "当运行环境选择 local 且系统非 windows 时，{shell_hint} 占位符的内容。"
+            "description": "本地模式命令行提示词（Unix-like）",
+            "hint": "当系统为类 Unix 时，注入到系统提示词末尾。"
           }
         }
       }
@@ -228,25 +222,13 @@
             "description": "启用",
             "hint": "启用后，将会传递给 Agent 相关工具来实现主动型 Agent。你可以告诉 AstrBot 未来某个时间要做的事情，它将被定时触发然后执行任务，然后将结果发送给你。"
           },
-          "cron_prompts": {
-            "history_wrap_prompt": {
-              "description": "Cron 历史对话包装模板",
-              "hint": "Cron 唤醒且存在历史对话时使用；支持 {history} 占位符。"
-            },
-            "execution_prompt": {
-              "description": "Cron 执行提示词",
-              "hint": "Cron 唤醒后的主请求提示词。"
-            }
+          "background_history_wrap_prompt": {
+            "description": "后台任务历史包装提示词",
+            "hint": "后台任务唤醒且存在历史对话时使用；支持 {context_dump} 占位符。"
           },
-          "background_prompts": {
-            "history_wrap_prompt": {
-              "description": "后台任务历史对话包装模板",
-              "hint": "后台任务唤醒主 Agent 且存在历史对话时使用；支持 {history} 占位符。"
-            },
-            "execution_prompt": {
-              "description": "后台任务执行提示词",
-              "hint": "后台任务唤醒后的主请求提示词。"
-            }
+          "background_execution_prompt": {
+            "description": "后台任务执行提示词",
+            "hint": "后台任务唤醒后的系统提示词；支持 {background_task_result} 占位符。"
           }
         }
       }

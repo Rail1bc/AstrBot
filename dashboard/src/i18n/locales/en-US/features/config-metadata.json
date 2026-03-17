@@ -194,6 +194,20 @@
             "description": "Shipyard Max Sessions",
             "hint": "Maximum number of Shipyard sessions an instance can handle."
           }
+        },
+        "local": {
+          "local_mode_prompt": {
+            "description": "Local Mode Prompt",
+            "hint": "Appended to the system prompt when runtime is local. Supports the {system_name} placeholder."
+          },
+          "local_shell_windows_hint": {
+            "description": "Local Shell Hint (Windows)",
+            "hint": "Windows-specific shell hint appended in local runtime."
+          },
+          "local_shell_unix_like_hint": {
+            "description": "Local Shell Hint (Unix-like)",
+            "hint": "Unix-like shell hint appended in local runtime."
+          }
         }
       }
     },
@@ -205,6 +219,14 @@
           "add_cron_tools": {
             "description": "Enable",
             "hint": "When enabled, related tools will be passed to the Agent to implement proactive Agent capabilities. You can tell AstrBot what to do at a future time, and it will be triggered on schedule to execute the task, and report the result back to you."
+          },
+          "background_history_wrap_prompt": {
+            "description": "Background History Wrap Prompt",
+            "hint": "Used when background wake-up has conversation history. Supports the {context_dump} placeholder."
+          },
+          "background_execution_prompt": {
+            "description": "Background Execution Prompt",
+            "hint": "System prompt for background task wake-up. Supports the {background_task_result} placeholder."
           }
         }
       }
