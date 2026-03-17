@@ -208,12 +208,24 @@ DEFAULT_CONFIG = {
             "shipyard_neo_access_token": "",
             "shipyard_neo_profile": "python-default",
             "shipyard_neo_ttl": 3600,
-            "shipyard_neo_file_path_rule": "",
-            "shipyard_neo_skill_lifecycle_workflow": "",
-            "local_mode_prompt": "",
-            "local_shell_windows_hint": "",
-            "local_shell_unix_like_hint": "",
+            "shipyard_neo_file_path_rule": (
+
+            ),
+            "shipyard_neo_skill_lifecycle_workflow": (
+
+            ),
         },
+        "local":{
+            "local_mode_prompt": (
+
+            ),
+            "local_shell_windows_hint": (
+
+            ),
+            "local_shell_unix_like_hint": (
+
+            ),
+        }
     },
     # SubAgent orchestrator mode:
     # - main_enable = False: disabled; main LLM mounts tools normally (persona selection).
@@ -3195,6 +3207,48 @@ CONFIG_METADATA_3 = {
                         "condition": {
                             "provider_settings.computer_use_runtime": "sandbox",
                             "provider_settings.sandbox.booter": "shipyard",
+                        },
+                    },
+                    "provider_settings.sandbox.shipyard_neo_file_path_rule": {
+                        "description": "Shipyard Neo File Path Rule",
+                        "type": "int",
+                        "hint": "Shipyard Neo 文件路径规则，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.computer_use_runtime": "sandbox",
+                            "provider_settings.sandbox.booter": "shipyard_neo",
+                        },
+                    },
+                    "provider_settings.sandbox.shipyard_neo_skill_lifecycle_workflow": {
+                        "description": "Shipyard Neo Skill Lifecycle Workflow",
+                        "type": "int",
+                        "hint": "Shipyard Neo Skill Lifecycle Workflow。，注入到系统提示词末尾",
+                        "condition": {
+                            "provider_settings.computer_use_runtime": "sandbox",
+                            "provider_settings.sandbox.booter": "shipyard_neo",
+                        },
+                    },
+                    "provider_settings.local.local_mode_prompt": {
+                        "description": "Local 模式提示词",
+                        "type": "int",
+                        "hint": "Local 模式提示文案，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.computer_use_runtime": "local",
+                        },
+                    },
+                    "provider_settings.local.local_shell_windows_hint": {
+                        "description": "Local 模式命令行提示词（Windows）",
+                        "type": "int",
+                        "hint": "当系统为 Windows ，提示命令行使用方法，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.computer_use_runtime": "local",
+                        },
+                    },
+                    "provider_settings.local.local_shell_unix_like_hint": {
+                        "description": "Local 模式命令行提示词（Unix-like）",
+                        "type": "int",
+                        "hint": "当系统为类 Unix 系统，提示命令行使用方法，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.computer_use_runtime": "local",
                         },
                     },
                 },
