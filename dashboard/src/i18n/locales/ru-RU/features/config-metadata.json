@@ -162,6 +162,14 @@
                     "booter": {
                         "description": "Драйвер среды песочницы"
                     },
+                    "shipyard_neo_file_path_rule": {
+                        "description": "Правило путей файлов Shipyard Neo",
+                        "hint": "Правило путей файлов Shipyard Neo, добавляется в конец системного промпта."
+                    },
+                    "shipyard_neo_skill_lifecycle_workflow": {
+                        "description": "Workflow жизненного цикла навыков Shipyard Neo",
+                        "hint": "Workflow жизненного цикла навыков Shipyard Neo, добавляется в конец системного промпта."
+                    },
                     "shipyard_neo_endpoint": {
                         "description": "Эндпоинт Shipyard Neo API",
                         "hint": "Адрес Bay API, по умолчанию http://127.0.0.1:8114."
@@ -214,6 +222,14 @@
         "proactive_capability": {
             "description": "Проактивный агент",
             "hint": "AstrBot будет просыпаться, выполнять ваши задачи и сообщать о результатах. См. [Проактивный агент](https://docs.astrbot.app/en/use/proactive-agent.html)",
+            "background_history_wrap_prompt": {
+                "description": "Промпт обертки истории фоновой задачи",
+                "hint": "Фоновая задача"
+            },
+            "background_execution_prompt": {
+                "description": "Промпт выполнения фоновой задачи",
+                "hint": "Фоновая задача"
+            },
             "provider_settings": {
                 "proactive_capability": {
                     "add_cron_tools": {
@@ -262,11 +278,27 @@
                 "llm_compress_provider_id": {
                     "description": "Модель для сжатия контекста",
                     "hint": "Если не выбрано, произойдет откат к стратегии удаления сообщений."
+                },
+                "context_summary_user_prompt": {
+                    "description": "Пользовательский текст сводки контекста",
+                    "hint": "Должен содержать ровно один плейсхолдер {summary_content}. Если пусто или формат неверный, используется текст по умолчанию."
+                },
+                "context_summary_ack_prompt": {
+                    "description": "Текст подтверждения сводки контекста",
+                    "hint": "Если пусто, используется текст по умолчанию."
                 }
             }
         },
         "others": {
             "description": "Прочие настройки",
+            "llm_safety_mode_system_prompt": {
+                "description": "Промпт безопасного режима",
+                "hint": "Текст безопасного режима, добавляемый в конец системного промпта."
+            },
+            "live_mode_system_prompt": {
+                "description": "Промпт режима live",
+                "hint": "Текст режима live, добавляемый в конец системного промпта."
+            },
             "provider_settings": {
                 "display_reasoning_text": {
                     "description": "Отображать процесс рассуждения (Reasoning)"
@@ -337,6 +369,26 @@
                         "Skills-like (двухэтапный)",
                         "Полная схема (Full)"
                     ]
+                },
+                "tool_call_prompt": {
+                    "description": "Промпт вызова инструментов",
+                    "hint": "Текст, добавляемый в конец системного промпта, когда доступны вызываемые инструменты."
+                },
+                "tool_call_skills_like_mode_prompt": {
+                    "description": "Промпт вызова инструментов в режиме skills-like",
+                    "hint": "Текст, добавляемый в конец системного промпта в режиме skills-like, когда доступны вызываемые инструменты."
+                },
+                "tool_call_requery_instruction_prompt": {
+                    "description": "Промпт второго этапа вызова инструментов (skills-like)",
+                    "hint": "Текст для запроса полных параметров в режиме skills-like. Поддерживает плейсхолдер {tool_names}."
+                },
+                "tool_call_follow_up_notice_prompt": {
+                    "description": "Текст уведомления о дополнительном вопросе",
+                    "hint": "Шаблон для случая, когда пользователь задает уточняющий вопрос во время выполнения инструмента. Поддерживает плейсхолдер {follow_up_lines}."
+                },
+                "tool_call_max_step_reached_prompt": {
+                    "description": "Текст при достижении лимита вызовов инструментов",
+                    "hint": "Текст, показываемый при достижении максимального количества раундов вызова инструментов."
                 },
                 "streaming_response": {
                     "description": "Потоковый вывод (Streaming)"
@@ -969,6 +1021,26 @@
             "log_level": {
                 "description": "Уровень логирования консоли",
                 "hint": "Уровень логирования в консоли."
+            },
+            "cron_history_wrap_prompt": {
+                "description": "Промпт обертки истории запланированной задачи",
+                "hint": "Текст для обертки истории запланированной задачи. Поддерживает плейсхолдер {context_dump}."
+            },
+            "cron_execution_prompt": {
+                "description": "Промпт выполнения запланированной задачи",
+                "hint": "Текст для выполнения запланированной задачи. Поддерживает плейсхолдер {cron_job}."
+            },
+            "cron_task_work_user_prompt": {
+                "description": "Промпт пробуждения запланированной задачи",
+                "hint": "Текст пробуждения для выполнения запланированной задачи."
+            },
+            "cron_task_summary_note": {
+                "description": "Текст заметки о запланированной задаче",
+                "hint": "Текст заметки после завершения запланированной задачи. Поддерживает плейсхолдеры {name_or_id}, {description} и {started_at}."
+            },
+            "cron_task_summary_note_result": {
+                "description": "Промпт результата запланированной задачи",
+                "hint": "Текст для результата запланированной задачи. Поддерживает плейсхолдер {result}."
             },
             "log_file_enable": {
                 "description": "Включить логирование в файл",

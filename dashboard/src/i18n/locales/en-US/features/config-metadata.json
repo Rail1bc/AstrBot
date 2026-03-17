@@ -162,6 +162,14 @@
           "booter": {
             "description": "Sandbox Environment Driver"
           },
+          "shipyard_neo_file_path_rule": {
+            "description": "Shipyard Neo File Path Rule",
+            "hint": "Shipyard Neo file path rule, appended to the end of the system prompt."
+          },
+          "shipyard_neo_skill_lifecycle_workflow": {
+            "description": "Shipyard Neo Skill Lifecycle Workflow",
+            "hint": "Shipyard Neo Skill Lifecycle Workflow, appended to the end of the system prompt."
+          },
           "shipyard_neo_endpoint": {
             "description": "Shipyard Neo API Endpoint",
             "hint": "Bay API address, default http://127.0.0.1:8114."
@@ -214,6 +222,14 @@
     "proactive_capability": {
       "description": "Proactive Agent",
       "hint": "AstrBot will wake up, run your tasks, and deliver the results to you. See [Proactive Agent](https://docs.astrbot.app/en/use/proactive-agent.html)",
+      "background_history_wrap_prompt": {
+        "description": "Background History Wrap Prompt",
+        "hint": "Background task"
+      },
+      "background_execution_prompt": {
+        "description": "Background Execution Prompt",
+        "hint": "Background task"
+      },
       "provider_settings": {
         "proactive_capability": {
           "add_cron_tools": {
@@ -262,11 +278,27 @@
         "llm_compress_provider_id": {
           "description": "Model Provider ID for Context Compression",
           "hint": "When left empty, will fall back to the 'Truncate by Turns' strategy."
+        },
+        "context_summary_user_prompt": {
+          "description": "Context Summary User Prompt",
+          "hint": "Must contain exactly one {summary_content} placeholder. If empty or invalid, the default text is used."
+        },
+        "context_summary_ack_prompt": {
+          "description": "Context Summary Acknowledgement Prompt",
+          "hint": "If empty, the default text is used."
         }
       }
     },
     "others": {
       "description": "Other Settings",
+      "llm_safety_mode_system_prompt": {
+        "description": "Healthy Mode Prompt",
+        "hint": "Prompt text for healthy mode, appended to the end of the system prompt."
+      },
+      "live_mode_system_prompt": {
+        "description": "Live Mode Prompt",
+        "hint": "Prompt text for live mode, appended to the end of the system prompt."
+      },
       "provider_settings": {
         "display_reasoning_text": {
           "description": "Display Reasoning Content"
@@ -337,6 +369,26 @@
             "Skills-like (two-stage)",
             "Full schema"
           ]
+        },
+        "tool_call_prompt": {
+          "description": "Tool Call Prompt",
+          "hint": "Injected text when callable tools are available, appended to the end of the system prompt."
+        },
+        "tool_call_skills_like_mode_prompt": {
+          "description": "Skills-like Tool Call Prompt",
+          "hint": "Injected text when callable tools are available in skills-like mode, appended to the end of the system prompt."
+        },
+        "tool_call_requery_instruction_prompt": {
+          "description": "Skills-like Tool Call Second-Stage Prompt",
+          "hint": "Prompt text for requesting full parameters in skills-like mode. Supports the {tool_names} placeholder."
+        },
+        "tool_call_follow_up_notice_prompt": {
+          "description": "Follow-up Notice Prompt",
+          "hint": "Template shown when the user sends follow-up messages during tool execution. Supports the {follow_up_lines} placeholder."
+        },
+        "tool_call_max_step_reached_prompt": {
+          "description": "Tool Call Round Limit Prompt",
+          "hint": "Prompt text shown when tool calls reach the maximum round limit."
         },
         "streaming_response": {
           "description": "Streaming Output"
@@ -969,6 +1021,26 @@
       "log_level": {
         "description": "Console Log Level",
         "hint": "Log level for console output."
+      },
+      "cron_history_wrap_prompt": {
+        "description": "Scheduled Task History Wrap Prompt",
+        "hint": "Prompt text for wrapping scheduled task history. Supports the {context_dump} placeholder."
+      },
+      "cron_execution_prompt": {
+        "description": "Scheduled Task Execution Prompt",
+        "hint": "Prompt text for executing scheduled tasks. Supports the {cron_job} placeholder."
+      },
+      "cron_task_work_user_prompt": {
+        "description": "Scheduled Task Wake-up Prompt",
+        "hint": "Wake-up prompt text for scheduled task execution."
+      },
+      "cron_task_summary_note": {
+        "description": "Scheduled Task Note Text",
+        "hint": "Note text when a scheduled task is completed. Supports the {name_or_id}, {description}, and {started_at} placeholders."
+      },
+      "cron_task_summary_note_result": {
+        "description": "Scheduled Task Result Prompt",
+        "hint": "Prompt text for scheduled task results. Supports the {result} placeholder."
       },
       "log_file_enable": {
         "description": "Enable File Logging",
