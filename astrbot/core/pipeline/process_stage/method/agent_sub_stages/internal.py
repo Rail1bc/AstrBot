@@ -87,6 +87,12 @@ class InternalAgentSubStage(Stage):
         self.llm_compress_instruction: str = settings.get(
             "llm_compress_instruction", ""
         )
+        self.context_summary_user_prompt: str = settings.get(
+            "context_summary_user_prompt", ""
+        )
+        self.context_summary_ack_prompt: str = settings.get(
+            "context_summary_ack_prompt", ""
+        )
         self.llm_compress_keep_recent: int = settings.get("llm_compress_keep_recent", 4)
         self.llm_compress_provider_id: str = settings.get(
             "llm_compress_provider_id", ""
@@ -131,6 +137,8 @@ class InternalAgentSubStage(Stage):
             file_extract_msh_api_key=self.file_extract_msh_api_key,
             context_limit_reached_strategy=self.context_limit_reached_strategy,
             llm_compress_instruction=self.llm_compress_instruction,
+            context_summary_user_prompt=self.context_summary_user_prompt,
+            context_summary_ack_prompt=self.context_summary_ack_prompt,
             llm_compress_keep_recent=self.llm_compress_keep_recent,
             llm_compress_provider_id=self.llm_compress_provider_id,
             max_context_length=self.max_context_length,

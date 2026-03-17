@@ -99,12 +99,14 @@ DEFAULT_CONFIG = {
             "3. If there was an initial user goal, state it first and describe the current progress/status.\n"
             "4. Write the summary in the user's language.\n"
         ),
+        "context_summary_user_prompt": (
+            "Our previous history conversation summary: {summary_content}"
+        ),
+        "context_summary_ack_prompt": (
+            "Acknowledged the summary of our previous conversation history."
+        ),
         "llm_compress_keep_recent": 6,
         "llm_compress_provider_id": "",
-        "context_summary_prompts": {
-            "user_prompt": "",
-            "ack_prompt": "",
-        },
         "max_context_length": -1,
         "dequeue_context_length": 1,
         "streaming_response": False,
@@ -3210,6 +3212,24 @@ CONFIG_METADATA_3 = {
                         "description": "上下文压缩提示词",
                         "type": "text",
                         "hint": "如果为空则使用默认提示词。",
+                        "condition": {
+                            "provider_settings.context_limit_reached_strategy": "llm_compress",
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.context_summary_user_prompt": {
+                        "description": "上下文摘要用户文案",
+                        "type": "text",
+                        "hint": "应至少包含且仅包含一个{summary_content}占位符，如果为空或不符合要求则使用默认文案。",
+                        "condition": {
+                            "provider_settings.context_limit_reached_strategy": "llm_compress",
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.context_summary_ack_prompt": {
+                        "description": "上下文摘要确认文案",
+                        "type": "text",
+                        "hint": "如果为空则使用默认文案。",
                         "condition": {
                             "provider_settings.context_limit_reached_strategy": "llm_compress",
                             "provider_settings.agent_runner_type": "local",

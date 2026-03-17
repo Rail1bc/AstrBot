@@ -100,6 +100,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         enforce_max_turns: int = -1,
         # llm compressor
         llm_compress_instruction: str | None = None,
+        context_summary_user_prompt: str | None = None,
+        context_summary_ack_prompt: str | None = None,
         llm_compress_keep_recent: int = 0,
         llm_compress_provider: Provider | None = None,
         # truncate by turns compressor
@@ -115,6 +117,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         self.streaming = streaming
         self.enforce_max_turns = enforce_max_turns
         self.llm_compress_instruction = llm_compress_instruction
+        self.context_summary_user_prompt = context_summary_user_prompt
+        self.context_summary_ack_prompt = context_summary_ack_prompt
         self.llm_compress_keep_recent = llm_compress_keep_recent
         self.llm_compress_provider = llm_compress_provider
         self.truncate_turns = truncate_turns
@@ -130,6 +134,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             enforce_max_turns=self.enforce_max_turns,
             truncate_turns=self.truncate_turns,
             llm_compress_instruction=self.llm_compress_instruction,
+            context_summary_user_prompt=self.context_summary_user_prompt,
+            context_summary_ack_prompt=self.context_summary_ack_prompt,
             llm_compress_keep_recent=self.llm_compress_keep_recent,
             llm_compress_provider=self.llm_compress_provider,
             custom_token_counter=self.custom_token_counter,

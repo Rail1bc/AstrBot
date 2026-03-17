@@ -96,6 +96,10 @@ class MainAgentBuildConfig:
     """The strategy to handle context length limit reached."""
     llm_compress_instruction: str = ""
     """The instruction for compression in llm_compress strategy."""
+    context_summary_user_prompt: str = ""
+    """The user prompt for context summarization in llm_compress strategy."""
+    context_summary_ack_prompt: str = ""
+    """The assistant prompt for context summarization acknowledgment in llm_compress strategy."""
     llm_compress_keep_recent: int = 6
     """The number of most recent turns to keep during llm_compress strategy."""
     llm_compress_provider_id: str = ""
@@ -1145,6 +1149,8 @@ async def build_main_agent(
         agent_hooks=MAIN_AGENT_HOOKS,
         streaming=streaming_response,
         llm_compress_instruction=config.llm_compress_instruction,
+        context_summary_user_prompt=config.context_summary_user_prompt,
+        context_summary_ack_prompt=config.context_summary_ack_prompt,
         llm_compress_keep_recent=config.llm_compress_keep_recent,
         llm_compress_provider=_get_compress_provider(config, plugin_context),
         truncate_turns=config.dequeue_context_length,
