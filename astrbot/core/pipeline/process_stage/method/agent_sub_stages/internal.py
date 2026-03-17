@@ -66,10 +66,18 @@ class InternalAgentSubStage(Stage):
             self.max_step = 30
         # 工具调用相关文案
         self.tool_call_prompt: str = settings.get("tool_call_prompt", "")
-        self.tool_call_skills_like_mode_prompt: str = settings.get("tool_call_skills_like_mode_prompt", "")
-        self.tool_call_requery_instruction_prompt: str = settings.get("tool_call_requery_instruction_prompt", "")
-        self.tool_call_follow_up_notice_prompt: str = settings.get("tool_call_follow_up_notice_prompt", "")
-        self.tool_call_max_step_reached_prompt: str = settings.get("tool_call_max_step_reached_prompt", "")
+        self.tool_call_skills_like_mode_prompt: str = settings.get(
+            "tool_call_skills_like_mode_prompt", ""
+        )
+        self.tool_call_requery_instruction_prompt: str = settings.get(
+            "tool_call_requery_instruction_prompt", ""
+        )
+        self.tool_call_follow_up_notice_prompt: str = settings.get(
+            "tool_call_follow_up_notice_prompt", ""
+        )
+        self.tool_call_max_step_reached_prompt: str = settings.get(
+            "tool_call_max_step_reached_prompt", ""
+        )
 
         self.show_tool_use: bool = settings.get("show_tool_use_status", True)
         self.show_tool_call_result: bool = settings.get("show_tool_call_result", False)
@@ -118,11 +126,14 @@ class InternalAgentSubStage(Stage):
         self.safety_mode_strategy = settings.get(
             "safety_mode_strategy", "system_prompt"
         )
-        self.llm_safety_mode_system_prompt = settings.get("llm_safety_mode_system_prompt", "")
+        self.llm_safety_mode_system_prompt = settings.get(
+            "llm_safety_mode_system_prompt", ""
+        )
 
         self.computer_use_runtime = settings.get("computer_use_runtime")
         self.live_mode_system_prompt = settings.get("live_mode_system_prompt", "")
         self.sandbox_cfg = settings.get("sandbox", {})
+        self.local_cfg = settings.get("local", {})
 
         # Proactive capability configuration
         proactive_cfg = settings.get("proactive_capability", {})
@@ -165,6 +176,7 @@ class InternalAgentSubStage(Stage):
             computer_use_runtime=self.computer_use_runtime,
             live_mode_system_prompt=self.live_mode_system_prompt,
             sandbox_cfg=self.sandbox_cfg,
+            local_cfg=self.local_cfg,
             tool_providers=_tool_providers,
             add_cron_tools=self.add_cron_tools,
             provider_settings=settings,

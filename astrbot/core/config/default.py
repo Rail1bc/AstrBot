@@ -138,7 +138,7 @@ DEFAULT_CONFIG = {
             "after execution, briefly summarize the result for the user; "
             "keep the conversation style consistent."
         ),
-        "tool_call_skills_like_mode_prompt":(
+        "tool_call_skills_like_mode_prompt": (
             "You MUST NOT return an empty response, especially after invoking a tool."
             " Before calling any tool, provide a brief explanatory message to the user stating the purpose of the tool call."
             " Tool schemas are provided in two stages: first only name and description; "
@@ -147,20 +147,20 @@ DEFAULT_CONFIG = {
             " After the tool call is completed, you must briefly summarize the results returned by the tool for the user."
             " Keep the role-play and style consistent throughout the conversation."
         ),
-        "tool_call_requery_instruction_prompt":(
+        "tool_call_requery_instruction_prompt": (
             "You have decided to call tool(s): "
             + "{tool_names}"
             + ". Now call the tool(s) with required arguments using the tool schema, "
             "and follow the existing tool-use rules."
         ),
-        "tool_call_follow_up_notice_prompt":(
+        "tool_call_follow_up_notice_prompt": (
             "\n\n[SYSTEM NOTICE] User sent follow-up messages while tool execution "
             "was in progress. Prioritize these follow-up instructions in your next "
             "actions. In your very next action, briefly acknowledge to the user "
             "that their follow-up message(s) were received before continuing.\n"
             "{follow_up_lines}"
         ),
-        "tool_call_max_step_reached_prompt":(
+        "tool_call_max_step_reached_prompt": (
             "工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。"
         ),
         "llm_safety_mode": True,
@@ -208,24 +208,12 @@ DEFAULT_CONFIG = {
             "shipyard_neo_access_token": "",
             "shipyard_neo_profile": "python-default",
             "shipyard_neo_ttl": 3600,
-            "shipyard_neo_file_path_rule": (
-
-            ),
-            "shipyard_neo_skill_lifecycle_workflow": (
-
-            ),
         },
-        "local":{
-            "local_mode_prompt": (
-
-            ),
-            "local_shell_windows_hint": (
-
-            ),
-            "local_shell_unix_like_hint": (
-
-            ),
-        }
+        "local": {
+            "local_mode_prompt": "",
+            "local_shell_windows_hint": "",
+            "local_shell_unix_like_hint": "",
+        },
     },
     # SubAgent orchestrator mode:
     # - main_enable = False: disabled; main LLM mounts tools normally (persona selection).
@@ -345,17 +333,16 @@ DEFAULT_CONFIG = {
         "The following object describes the scheduled task that triggered you:\n"
         "{cron_job}"
     ),
-    "cron_task_work_user_prompt":(
+    "cron_task_work_user_prompt": (
         "You are now responding to a scheduled task. "
         "Proceed according to your system instructions. "
         "Output using same language as previous conversation. "
         "After completing your task, summarize and output your actions and results."
     ),
-    "cron_task_summary_note":(
-        "[CronJob] {name_or_id}: {description} "
-        " triggered at {started_at}, "
+    "cron_task_summary_note": (
+        "[CronJob] {name_or_id}: {description}  triggered at {started_at}, "
     ),
-    "cron_task_summary_note_result":(
+    "cron_task_summary_note_result": (
         "I finished this job, here is the result: {result}"
     ),
     "kb_names": [],  # 默认知识库名称列表
@@ -3209,27 +3196,9 @@ CONFIG_METADATA_3 = {
                             "provider_settings.sandbox.booter": "shipyard",
                         },
                     },
-                    "provider_settings.sandbox.shipyard_neo_file_path_rule": {
-                        "description": "Shipyard Neo File Path Rule",
-                        "type": "int",
-                        "hint": "Shipyard Neo 文件路径规则，注入到系统提示词末尾。",
-                        "condition": {
-                            "provider_settings.computer_use_runtime": "sandbox",
-                            "provider_settings.sandbox.booter": "shipyard_neo",
-                        },
-                    },
-                    "provider_settings.sandbox.shipyard_neo_skill_lifecycle_workflow": {
-                        "description": "Shipyard Neo Skill Lifecycle Workflow",
-                        "type": "int",
-                        "hint": "Shipyard Neo Skill Lifecycle Workflow。，注入到系统提示词末尾",
-                        "condition": {
-                            "provider_settings.computer_use_runtime": "sandbox",
-                            "provider_settings.sandbox.booter": "shipyard_neo",
-                        },
-                    },
                     "provider_settings.local.local_mode_prompt": {
                         "description": "Local 模式提示词",
-                        "type": "int",
+                        "type": "string",
                         "hint": "Local 模式提示文案，注入到系统提示词末尾。",
                         "condition": {
                             "provider_settings.computer_use_runtime": "local",
@@ -3237,7 +3206,7 @@ CONFIG_METADATA_3 = {
                     },
                     "provider_settings.local.local_shell_windows_hint": {
                         "description": "Local 模式命令行提示词（Windows）",
-                        "type": "int",
+                        "type": "string",
                         "hint": "当系统为 Windows ，提示命令行使用方法，注入到系统提示词末尾。",
                         "condition": {
                             "provider_settings.computer_use_runtime": "local",
@@ -3245,7 +3214,7 @@ CONFIG_METADATA_3 = {
                     },
                     "provider_settings.local.local_shell_unix_like_hint": {
                         "description": "Local 模式命令行提示词（Unix-like）",
-                        "type": "int",
+                        "type": "string",
                         "hint": "当系统为类 Unix 系统，提示命令行使用方法，注入到系统提示词末尾。",
                         "condition": {
                             "provider_settings.computer_use_runtime": "local",
@@ -3435,7 +3404,7 @@ CONFIG_METADATA_3 = {
                             "provider_settings.llm_safety_mode": True,
                         },
                     },
-                    "llm_safety_mode_system_prompt":{
+                    "llm_safety_mode_system_prompt": {
                         "description": "健康模式提示词",
                         "type": "string",
                         "hint": "健康模式的提示文案，注入到系统提示词末尾。",
@@ -4048,17 +4017,17 @@ CONFIG_METADATA_3_SYSTEM = {
                         "type": "string",
                         "hint": "定时任务执行提示文案，支持 {cron_job} 占位符。",
                     },
-                    "cron_task_work_user_prompt":{
+                    "cron_task_work_user_prompt": {
                         "description": "定时任务执行唤醒提示词",
                         "type": "string",
                         "hint": "定时任务执行唤醒提示文案。",
                     },
-                    "cron_task_summary_note":{
+                    "cron_task_summary_note": {
                         "description": "定时任务笔记文案",
                         "type": "string",
                         "hint": "定时任务完成笔记文案，支持 {name_or_id} {description} {started_at} 占位符。",
                     },
-                    "cron_task_summary_note_result":{
+                    "cron_task_summary_note_result": {
                         "description": "定时任务结果提示词",
                         "type": "string",
                         "hint": "定时任务结果提示文案，支持 {result} 占位符。",

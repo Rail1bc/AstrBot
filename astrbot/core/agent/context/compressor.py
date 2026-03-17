@@ -177,10 +177,15 @@ class LLMSummaryCompressor:
             "4. Write the summary in the user's language.\n"
         )
         PLACEHOLDER = "{summary_content}"
-        self.usr_prompt = user_prompt \
-            if user_prompt and user_prompt.count(PLACEHOLDER) == 1 \
+        self.usr_prompt = (
+            user_prompt
+            if user_prompt and user_prompt.count(PLACEHOLDER) == 1
             else f"Our previous history conversation summary: {PLACEHOLDER}"
-        self.ack_prompt = ack_prompt or "Acknowledged the summary of our previous conversation history."
+        )
+        self.ack_prompt = (
+            ack_prompt
+            or "Acknowledged the summary of our previous conversation history."
+        )
 
     def should_compress(
         self, messages: list[Message], current_tokens: int, max_tokens: int

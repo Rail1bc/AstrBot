@@ -128,6 +128,7 @@ class MainAgentBuildConfig:
     """The runtime for agent computer use: none, local, or sandbox."""
     live_mode_system_prompt: str = LIVE_MODE_SYSTEM_PROMPT
     sandbox_cfg: dict = field(default_factory=dict)
+    local_cfg: dict = field(default_factory=dict)
     tool_providers: list[ToolProvider] = field(default_factory=list)
     """Decoupled tool providers injected by the caller.
     Each provider is queried for tools and system-prompt addons at build time."""
@@ -835,7 +836,9 @@ async def _handle_webchat(
 
 def _apply_llm_safety_mode(config: MainAgentBuildConfig, req: ProviderRequest) -> None:
     if config.safety_mode_strategy == "system_prompt":
-        req.system_prompt = f"{config.llm_safety_mode_system_prompt}\n\n{req.system_prompt}"
+        req.system_prompt = (
+            f"{config.llm_safety_mode_system_prompt}\n\n{req.system_prompt}"
+        )
     else:
         logger.warning(
             "Unsupported llm_safety_mode strategy: %s.",
@@ -1076,6 +1079,7 @@ async def build_main_agent(
         _provider_ctx = ToolProviderContext(
             computer_use_runtime=config.computer_use_runtime,
             sandbox_cfg=config.sandbox_cfg,
+            local_cfg=config.local_cfg,
             session_id=req.session_id or "",
         )
         # Respect WebUI tool enable/disable settings.

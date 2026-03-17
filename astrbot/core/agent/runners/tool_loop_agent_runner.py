@@ -178,6 +178,7 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         def _is_valid_prompt(prompt: str, placeholder: str) -> bool:
             """检查提示字符串是否有效：非空且包含恰好一个占位符"""
             return prompt and prompt.count(placeholder) == 1
+
         PLACEHOLDER = "{tool_names}"
         DEFAULT_PROMPT = (
             f"You have decided to call tool(s): {PLACEHOLDER}. "
@@ -372,10 +373,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         follow_up_lines = "\n".join(
             f"{idx}. {ticket.text}" for idx, ticket in enumerate(follow_ups, start=1)
         )
-        return (
-            self.tool_call_follow_up_notice_prompt.format(
-                follow_up_lines=follow_up_lines
-            )
+        return self.tool_call_follow_up_notice_prompt.format(
+            follow_up_lines=follow_up_lines
         )
 
     def _merge_follow_up_notice(self, content: str) -> str:
@@ -938,10 +937,8 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
                 contexts.append(msg.model_dump())  # type: ignore[call-arg]
             elif isinstance(msg, dict):
                 contexts.append(copy.deepcopy(msg))
-        instruction = (
-            self.tool_call_requery_instruction_prompt.format(
-                tool_names=", ".join(tool_names)
-            )
+        instruction = self.tool_call_requery_instruction_prompt.format(
+            tool_names=", ".join(tool_names)
         )
         if contexts and contexts[0].get("role") == "system":
             content = contexts[0].get("content") or ""

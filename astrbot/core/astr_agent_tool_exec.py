@@ -232,6 +232,7 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
         cls,
         runtime: str,
         sandbox_cfg: dict | None = None,
+        local_cfg: dict | None = None,
         session_id: str = "",
     ) -> dict[str, FunctionTool]:
         from astrbot.core.computer.computer_tool_provider import ComputerToolProvider
@@ -241,6 +242,7 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
         ctx = ToolProviderContext(
             computer_use_runtime=runtime,
             sandbox_cfg=sandbox_cfg,
+            local_cfg=local_cfg,
             session_id=session_id,
         )
         tools = provider.get_tools(ctx)
@@ -265,9 +267,11 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
         provider_settings = cfg.get("provider_settings", {})
         runtime = str(provider_settings.get("computer_use_runtime", "local"))
         sandbox_cfg = provider_settings.get("sandbox", {})
+        local_cfg = provider_settings.get("local", {})
         runtime_computer_tools = cls._get_runtime_computer_tools(
             runtime,
             sandbox_cfg=sandbox_cfg,
+            local_cfg=local_cfg,
             session_id=event.unified_msg_origin,
         )
 
