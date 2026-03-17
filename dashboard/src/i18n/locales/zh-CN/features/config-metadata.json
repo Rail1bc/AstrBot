@@ -195,6 +195,26 @@
           "shipyard_max_sessions": {
             "description": "Shipyard Ship 会话复用上限",
             "hint": "决定了一个实例承载的最大会话数量。"
+          },
+          "shipyard_neo_file_path_rule": {
+            "description": "Shipyard Neo 文件路径规则",
+            "hint": "环境选择 Shipyard Neo 时，在系统提示词末尾注入该文案。"
+          },
+          "shipyard_neo_skill_lifecycle_workflow": {
+            "description": "Shipyard Neo Skill 生命周期工作流",
+            "hint": "环境选择 Shipyard Neo 时，在系统提示词末尾注入该文案。"
+          },
+          "local_mode_prompt": {
+            "description": "本地模式提示词",
+            "hint": "当运行环境选择 local 时，在系统提示词末尾注入该文案。支持{system_name}占位符。"
+          },
+          "local_shell_windows_hint": {
+            "description": "本地模式 Shell 提示",
+            "hint": "当运行环境选择 local 且系统为 windows 时，{shell_hint} 占位符的内容。"
+          },
+          "local_shell_unix_like_hint": {
+            "description": "本地模式 Shell 提示",
+            "hint": "当运行环境选择 local 且系统非 windows 时，{shell_hint} 占位符的内容。"
           }
         }
       }
@@ -207,6 +227,26 @@
           "add_cron_tools": {
             "description": "启用",
             "hint": "启用后，将会传递给 Agent 相关工具来实现主动型 Agent。你可以告诉 AstrBot 未来某个时间要做的事情，它将被定时触发然后执行任务，然后将结果发送给你。"
+          },
+          "cron_prompts": {
+            "history_wrap_prompt": {
+              "description": "Cron 历史对话包装模板",
+              "hint": "Cron 唤醒且存在历史对话时使用；支持 {history} 占位符。"
+            },
+            "execution_prompt": {
+              "description": "Cron 执行提示词",
+              "hint": "Cron 唤醒后的主请求提示词。"
+            }
+          },
+          "background_prompts": {
+            "history_wrap_prompt": {
+              "description": "后台任务历史对话包装模板",
+              "hint": "后台任务唤醒主 Agent 且存在历史对话时使用；支持 {history} 占位符。"
+            },
+            "execution_prompt": {
+              "description": "后台任务执行提示词",
+              "hint": "后台任务唤醒后的主请求提示词。"
+            }
           }
         }
       }
@@ -242,6 +282,16 @@
         "llm_compress_provider_id": {
           "description": "用于上下文压缩的模型提供商 ID",
           "hint": "留空时将降级为\"按对话轮数截断\"的策略。"
+        },
+        "context_summary_prompts": {
+          "user_prompt": {
+            "description": "上下文压缩摘要注入提示词",
+            "hint": "LLM 压缩上下文时注入为 user 消息；支持 {summary} 占位符。"
+          },
+          "ack_prompt": {
+            "description": "上下文压缩摘要确认提示词",
+            "hint": "LLM 压缩上下文后注入为 assistant 消息。"
+          }
         }
       }
     },
@@ -258,6 +308,10 @@
         "safety_mode_strategy": {
           "description": "健康模式策略",
           "hint": "选择健康模式的实现方式。"
+        },
+        "llm_safety_mode_system_prompt": {
+          "description": "健康模式提示词",
+          "hint": "当健康模式策略选择“系统提示词”时，在系统提示词开头注入该文案。"
         },
         "identifier": {
           "description": "用户识别",
@@ -318,6 +372,28 @@
             "Full（完整参数）"
           ]
         },
+        "tool_call_prompts": {
+          "tool_call_prompt": {
+            "description": "工具调用注入提示词",
+            "hint": "当存在可用工具，在系统提示词末尾注入该文案"
+          },
+          "tool_call_prompt_skills_like_mode": {
+            "description": "Skills-like 模式工具调用提示词",
+            "hint": "当存在可用工具且为 Skills-like 模式，在系统提示词末尾注入该文案"
+          },
+          "follow_up_notice_prompt": {
+            "description": "追问注入提示词",
+            "hint": "当工具执行期间收到用户追问时，会把该提示词与追问列表一起注入到工具返回结果中。"
+          },
+          "max_step_reached_prompt": {
+            "description": "工具轮次上限提示词",
+            "hint": "当 Agent 达到工具调用轮次上限时，会注入该提示词，要求停止继续调用工具并给出总结。"
+          },
+          "requery_instruction_prompt": {
+            "description": "Skills-like 二阶段工具调用提示词",
+            "hint": "Skills-like 模式下，模型先选工具名后会二次请求参数模式；支持 {tool_names} 占位符。"
+          }
+        },
         "streaming_response": {
           "description": "流式输出"
         },
@@ -336,6 +412,14 @@
         "prompt_prefix": {
           "description": "用户提示词",
           "hint": "可使用 {{prompt}} 作为用户输入的占位符。如果不输入占位符则代表添加在用户输入的前面。"
+        },
+        "live_mode_system_prompt": {
+          "description": "live模式系统提示词",
+          "hint": "action_type == live 时，在系统提示词末尾注入该文案。"
+        },
+        "kb_repair_user_prompt_template": {
+          "description": "知识库文本修复用户提示词模板",
+          "hint": "知识库文本修复流程中的 user prompt 模板；支持 {chunk} 占位符。"
         },
         "reachability_check": {
           "description": "提供商可达性检测",

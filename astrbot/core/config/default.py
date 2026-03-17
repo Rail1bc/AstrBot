@@ -101,6 +101,10 @@ DEFAULT_CONFIG = {
         ),
         "llm_compress_keep_recent": 6,
         "llm_compress_provider_id": "",
+        "context_summary_prompts": {
+            "user_prompt": "",
+            "ack_prompt": "",
+        },
         "max_context_length": -1,
         "dequeue_context_length": 1,
         "streaming_response": False,
@@ -124,8 +128,16 @@ DEFAULT_CONFIG = {
         "max_agent_step": 30,
         "tool_call_timeout": 60,
         "tool_schema_mode": "full",
+        "tool_call_prompts": {
+            "tool_call_prompt": "",
+            "tool_call_prompt_skills_like_mode": "",
+            "follow_up_notice_prompt": "",
+            "max_step_reached_prompt": "",
+            "requery_instruction_prompt": "",
+        },
         "llm_safety_mode": True,
         "safety_mode_strategy": "system_prompt",  # TODO: llm judge
+        "llm_safety_mode_system_prompt": "",
         "file_extract": {
             "enable": False,
             "provider": "moonshotai",
@@ -133,9 +145,19 @@ DEFAULT_CONFIG = {
         },
         "proactive_capability": {
             "add_cron_tools": True,
+            "cron_prompts": {
+                "history_wrap_prompt": "",
+                "execution_prompt": "",
+            },
+            "background_prompts": {
+                "history_wrap_prompt": "",
+                "execution_prompt": "",
+            },
         },
         "computer_use_runtime": "none",
         "computer_use_require_admin": True,
+        "live_mode_system_prompt": "",
+        "kb_repair_user_prompt_template": "",
         "sandbox": {
             "booter": "shipyard_neo",
             "shipyard_endpoint": "",
@@ -146,6 +168,11 @@ DEFAULT_CONFIG = {
             "shipyard_neo_access_token": "",
             "shipyard_neo_profile": "python-default",
             "shipyard_neo_ttl": 3600,
+            "shipyard_neo_file_path_rule": "",
+            "shipyard_neo_skill_lifecycle_workflow": "",
+            "local_mode_prompt": "",
+            "local_shell_windows_hint": "",
+            "local_shell_unix_like_hint": "",
         },
     },
     # SubAgent orchestrator mode:
