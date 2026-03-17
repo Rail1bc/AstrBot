@@ -530,6 +530,8 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
 
         event = run_context.context.event
         ctx = run_context.context.context
+        cfg = ctx.get_config(umo=event.unified_msg_origin)
+        proactive_cfg = cfg.get("provider_settings", {}).get("proactive_capability", {})
 
         task_result = {
             "task_id": task_id,
@@ -568,12 +570,48 @@ class FunctionToolExecutor(BaseFunctionToolExecutor[AstrAgentContext]):
             req.contexts = context
             context_dump = req._print_friendly_context()
             req.contexts = []
-            req.system_prompt += CONVERSATION_HISTORY_INJECT_PREFIX + context_dump
+            history_wrap_prompt = proactive_cfg.get(
+                "background_history_wrap_prompt", ""
+            )
+            if history_wrap_prompt:
+                try:
+                    req.system_prompt += history_wrap_prompt.format(
+                        context_dump=context_dump
+                    )
+                except Exception:
+                    logger.error(
+                        "background_history_wrap_prompt 格式化失败，回退到默认模板",
+                        exc_info=True,
+                    )
+                    req.system_prompt += CONVERSATION_HISTORY_INJECT_PREFIX.format(
+                        context_dump=context_dump
+                    )
+            else:
+                req.system_prompt += CONVERSATION_HISTORY_INJECT_PREFIX.format(
+                    context_dump=context_dump
+                )
 
         bg = json.dumps(extras["background_task_result"], ensure_ascii=False)
-        req.system_prompt += BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT.format(
-            background_task_result=bg
+        background_execution_prompt = proactive_cfg.get(
+            "background_execution_prompt", ""
         )
+        if background_execution_prompt:
+            try:
+                req.system_prompt += background_execution_prompt.format(
+                    background_task_result=bg
+                )
+            except Exception:
+                logger.error(
+                    "background_execution_prompt 格式化失败，回退到默认模板",
+                    exc_info=True,
+                )
+                req.system_prompt += BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT.format(
+                    background_task_result=bg
+                )
+        else:
+            req.system_prompt += BACKGROUND_TASK_RESULT_WOKE_SYSTEM_PROMPT.format(
+                background_task_result=bg
+            )
         req.prompt = BACKGROUND_TASK_WOKE_USER_PROMPT
         if not req.func_tool:
             req.func_tool = ToolSet()

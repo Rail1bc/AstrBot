@@ -210,9 +210,17 @@ DEFAULT_CONFIG = {
             "shipyard_neo_ttl": 3600,
         },
         "local": {
-            "local_mode_prompt": "",
-            "local_shell_windows_hint": "",
-            "local_shell_unix_like_hint": "",
+            "local_mode_prompt": (
+                "You have access to the host local environment and can execute shell commands and Python code. "
+                "Current operating system: {system_name}."
+            ),
+            "local_shell_windows_hint": (
+                "The runtime shell is Windows Command Prompt (cmd.exe). "
+                "Use cmd-compatible commands and do not assume Unix commands like cat/ls/grep are available."
+            ),
+            "local_shell_unix_like_hint": (
+                "The runtime shell is Unix-like. Use POSIX-compatible shell commands."
+            ),
         },
     },
     # SubAgent orchestrator mode:
@@ -3266,12 +3274,12 @@ CONFIG_METADATA_3 = {
                         "type": "bool",
                         "hint": "启用后，将会传递给 Agent 相关工具来实现主动型 Agent。你可以告诉 AstrBot 未来某个时间要做的事情，它将被定时触发然后执行任务。",
                     },
-                    "background_history_wrap_prompt": {
+                    "provider_settings.proactive_capability.background_history_wrap_prompt": {
                         "description": "后台任务历史包装提示词",
                         "type": "string",
                         "hint": "后台任务",
                     },
-                    "background_execution_prompt": {
+                    "provider_settings.proactive_capability.background_execution_prompt": {
                         "description": "后台任务执行提示词",
                         "type": "string",
                         "hint": "后台任务",
