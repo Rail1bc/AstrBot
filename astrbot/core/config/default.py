@@ -130,13 +130,39 @@ DEFAULT_CONFIG = {
         "max_agent_step": 30,
         "tool_call_timeout": 60,
         "tool_schema_mode": "full",
-        "tool_call_prompts": {
-            "tool_call_prompt": "",
-            "tool_call_prompt_skills_like_mode": "",
-            "follow_up_notice_prompt": "",
-            "max_step_reached_prompt": "",
-            "requery_instruction_prompt": "",
-        },
+        "tool_call_prompt": (
+            "When using tools: "
+            "never return an empty response; "
+            "briefly explain the purpose before calling a tool; "
+            "follow the tool schema exactly and do not invent parameters; "
+            "after execution, briefly summarize the result for the user; "
+            "keep the conversation style consistent."
+        ),
+        "tool_call_skills_like_mode_prompt":(
+            "You MUST NOT return an empty response, especially after invoking a tool."
+            " Before calling any tool, provide a brief explanatory message to the user stating the purpose of the tool call."
+            " Tool schemas are provided in two stages: first only name and description; "
+            "if you decide to use a tool, the full parameter schema will be provided in "
+            "a follow-up step. Do not guess arguments before you see the schema."
+            " After the tool call is completed, you must briefly summarize the results returned by the tool for the user."
+            " Keep the role-play and style consistent throughout the conversation."
+        ),
+        "tool_call_requery_instruction_prompt":(
+            "You have decided to call tool(s): "
+            + "{tool_names}"
+            + ". Now call the tool(s) with required arguments using the tool schema, "
+            "and follow the existing tool-use rules."
+        ),
+        "tool_call_follow_up_notice_prompt":(
+            "\n\n[SYSTEM NOTICE] User sent follow-up messages while tool execution "
+            "was in progress. Prioritize these follow-up instructions in your next "
+            "actions. In your very next action, briefly acknowledge to the user "
+            "that their follow-up message(s) were received before continuing.\n"
+            "{follow_up_lines}"
+        ),
+        "tool_call_max_step_reached_prompt":(
+            "工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。"
+        ),
         "llm_safety_mode": True,
         "safety_mode_strategy": "system_prompt",  # TODO: llm judge
         "llm_safety_mode_system_prompt": "",
@@ -3361,6 +3387,49 @@ CONFIG_METADATA_3 = {
                         "options": ["skills_like", "full"],
                         "labels": ["Skills-like（两阶段）", "Full（完整参数）"],
                         "hint": "skills-like 先下发工具名称与描述，再下发参数；full 一次性下发完整参数。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_prompt": {
+                        "description": "工具调用提示词",
+                        "type": "string",
+                        "hint": "具有可调用工具时的注入文案，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.tool_schema_mode": "full",
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_skills_like_mode_prompt": {
+                        "description": "skills-like工具调用提示词",
+                        "type": "string",
+                        "hint": "skills-like模式，具有可调用工具时的注入文案，注入到系统提示词末尾。",
+                        "condition": {
+                            "provider_settings.tool_schema_mode": "skills_like",
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_requery_instruction_prompt": {
+                        "description": "skills-like工具调用二阶段提示词",
+                        "type": "string",
+                        "hint": "skills-like模式下发完整参数的提示文案，支持{tool_names}占位符。",
+                        "condition": {
+                            "provider_settings.tool_schema_mode": "skills_like",
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_follow_up_notice_prompt": {
+                        "description": "追问提示文案",
+                        "type": "string",
+                        "hint": "工具调用执行期间，用户追问的提示文案模板，支持{follow_up_lines}占位符。",
+                        "condition": {
+                            "provider_settings.agent_runner_type": "local",
+                        },
+                    },
+                    "provider_settings.tool_call_max_step_reached_prompt": {
+                        "description": "工具调用轮数上限提示文案",
+                        "type": "string",
+                        "hint": "当工具调用达到最大轮数时的提示文案",
                         "condition": {
                             "provider_settings.agent_runner_type": "local",
                         },

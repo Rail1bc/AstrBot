@@ -110,6 +110,9 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         custom_token_counter: TokenCounter | None = None,
         custom_compressor: ContextCompressor | None = None,
         tool_schema_mode: str | None = "full",
+        tool_call_requery_instruction_prompt: str = "",
+        tool_call_follow_up_notice_prompt: str = "",
+        tool_call_max_step_reached_prompt: str = "",
         fallback_providers: list[Provider] | None = None,
         **kwargs: T.Any,
     ) -> None:
@@ -172,7 +175,39 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
         #   Light tool schema does not include tool parameters.
         #   This can reduce token usage when tools have large descriptions.
         # See #4681
-        self.tool_schema_mode = tool_schema_mode
+        def _is_valid_prompt(prompt: str, placeholder: str) -> bool:
+            """检查提示字符串是否有效：非空且包含恰好一个占位符"""
+            return prompt and prompt.count(placeholder) == 1
+        PLACEHOLDER = "{tool_names}"
+        DEFAULT_PROMPT = (
+            f"You have decided to call tool(s): {PLACEHOLDER}. "
+            f"Now call the tool(s) with required arguments using the tool schema, "
+            f"and follow the existing tool-use rules."
+        )
+        self.tool_call_requery_instruction_prompt = (
+            tool_call_requery_instruction_prompt
+            if _is_valid_prompt(tool_call_requery_instruction_prompt, PLACEHOLDER)
+            else DEFAULT_PROMPT
+        )
+        PLACEHOLDER = "{follow_up_lines}"
+        DEFAULT_PROMPT = (
+            "\n\n[SYSTEM NOTICE] User sent follow-up messages while tool execution "
+            "was in progress. Prioritize these follow-up instructions in your next "
+            "actions. In your very next action, briefly acknowledge to the user "
+            "that their follow-up message(s) were received before continuing.\n"
+            f"{PLACEHOLDER}"
+        )
+        self.tool_call_follow_up_notice_prompt = (
+            tool_call_follow_up_notice_prompt
+            if _is_valid_prompt(tool_call_follow_up_notice_prompt, PLACEHOLDER)
+            else DEFAULT_PROMPT
+        )
+        self.tool_call_max_step_reached_prompt = (
+            tool_call_max_step_reached_prompt
+            if tool_call_max_step_reached_prompt
+            else "工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。"
+        )
+
         self._tool_schema_param_set = None
         self._skill_like_raw_tool_set = None
         if tool_schema_mode == "skills_like":
@@ -338,11 +373,9 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             f"{idx}. {ticket.text}" for idx, ticket in enumerate(follow_ups, start=1)
         )
         return (
-            "\n\n[SYSTEM NOTICE] User sent follow-up messages while tool execution "
-            "was in progress. Prioritize these follow-up instructions in your next "
-            "actions. In your very next action, briefly acknowledge to the user "
-            "that their follow-up message(s) were received before continuing.\n"
-            f"{follow_up_lines}"
+            self.tool_call_follow_up_notice_prompt.format(
+                follow_up_lines=follow_up_lines
+            )
         )
 
     def _merge_follow_up_notice(self, content: str) -> str:
@@ -646,7 +679,7 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             self.run_context.messages.append(
                 Message(
                     role="user",
-                    content="工具调用次数已达到上限，请停止使用工具，并根据已经收集到的信息，对你的任务和发现进行总结，然后直接回复用户。",
+                    content=self.tool_call_max_step_reached_prompt,
                 )
             )
             # 再执行最后一步
@@ -906,10 +939,9 @@ class ToolLoopAgentRunner(BaseAgentRunner[TContext]):
             elif isinstance(msg, dict):
                 contexts.append(copy.deepcopy(msg))
         instruction = (
-            "You have decided to call tool(s): "
-            + ", ".join(tool_names)
-            + ". Now call the tool(s) with required arguments using the tool schema, "
-            "and follow the existing tool-use rules."
+            self.tool_call_requery_instruction_prompt.format(
+                tool_names=", ".join(tool_names)
+            )
         )
         if contexts and contexts[0].get("role") == "system":
             content = contexts[0].get("content") or ""
