@@ -182,14 +182,8 @@ DEFAULT_CONFIG = {
         },
         "proactive_capability": {
             "add_cron_tools": True,
-            "cron_prompts": {
-                "history_wrap_prompt": "",
-                "execution_prompt": "",
-            },
-            "background_prompts": {
-                "history_wrap_prompt": "",
-                "execution_prompt": "",
-            },
+            "background_history_wrap_prompt": "",
+            "background_execution_prompt": "",
         },
         "computer_use_runtime": "none",
         "computer_use_require_admin": True,
@@ -204,7 +198,6 @@ DEFAULT_CONFIG = {
             "Simple questions get simple answers. "
             "Sound like a real conversation, not a Q&A system."
         ),
-        "kb_repair_user_prompt_template": "",
         "sandbox": {
             "booter": "shipyard_neo",
             "shipyard_endpoint": "",
@@ -319,6 +312,40 @@ DEFAULT_CONFIG = {
     "callback_api_base": "",
     "default_kb_collection": "",  # 默认知识库名称, 已经过时
     "plugin_set": ["*"],  # "*" 表示使用所有可用的插件, 空列表表示不使用任何插件
+    "cron_history_wrap_prompt": (
+        "\n\nBelow is your and the user's previous conversation history:"
+        "---\n{context_dump}\n---\n"
+    ),
+    "cron_execution_prompt": (
+        "You are an autonomous proactive agent.\n\n"
+        "You are awakened by a scheduled cron job, not by a user message.\n"
+        "You are given:"
+        "1. A cron job description explaining why you are activated.\n"
+        "2. Historical conversation context between you and the user.\n"
+        "3. Your available tools and skills.\n"
+        "# IMPORTANT RULES\n"
+        "1. This is NOT a chat turn. Do NOT greet the user. Do NOT ask the user questions unless strictly necessary.\n"
+        "2. Use historical conversation and memory to understand you and user's relationship, preferences, and context.\n"
+        "3. If messaging the user: Explain WHY you are contacting them; Reference the cron task implicitly (not technical details).\n"
+        "4. You can use your available tools and skills to finish the task if needed.\n"
+        "5. Use `send_message_to_user` tool to send message to user if needed."
+        "# CRON JOB CONTEXT\n"
+        "The following object describes the scheduled task that triggered you:\n"
+        "{cron_job}"
+    ),
+    "cron_task_work_user_prompt":(
+        "You are now responding to a scheduled task. "
+        "Proceed according to your system instructions. "
+        "Output using same language as previous conversation. "
+        "After completing your task, summarize and output your actions and results."
+    ),
+    "cron_task_summary_note":(
+        "[CronJob] {name_or_id}: {description} "
+        " triggered at {started_at}, "
+    ),
+    "cron_task_summary_note_result":(
+        "I finished this job, here is the result: {result}"
+    ),
     "kb_names": [],  # 默认知识库名称列表
     "kb_fusion_top_k": 20,  # 知识库检索融合阶段返回结果数量
     "kb_final_top_k": 5,  # 知识库检索最终返回结果数量
@@ -3215,6 +3242,26 @@ CONFIG_METADATA_3 = {
                         "description": "启用",
                         "type": "bool",
                         "hint": "启用后，将会传递给 Agent 相关工具来实现主动型 Agent。你可以告诉 AstrBot 未来某个时间要做的事情，它将被定时触发然后执行任务。",
+                    },
+                    "cron_history_wrap_prompt": {
+                        "description": "定时任务历史包装提示词",
+                        "type": "string",
+                        "hint": "定时任务",
+                    },
+                    "cron_execution_prompt": {
+                        "description": "定时任务执行提示词",
+                        "type": "string",
+                        "hint": "定时任务",
+                    },
+                    "background_history_wrap_prompt": {
+                        "description": "后台任务历史包装提示词",
+                        "type": "string",
+                        "hint": "后台任务",
+                    },
+                    "background_execution_prompt": {
+                        "description": "后台任务执行提示词",
+                        "type": "string",
+                        "hint": "后台任务",
                     },
                 },
                 "condition": {
