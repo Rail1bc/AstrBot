@@ -123,8 +123,10 @@ class MainAgentBuildConfig:
     """This will inject healthy and safe system prompt into the main agent,
     to prevent LLM output harmful information"""
     safety_mode_strategy: str = "system_prompt"
+    llm_safety_mode_system_prompt: str = LLM_SAFETY_MODE_SYSTEM_PROMPT
     computer_use_runtime: str = "local"
     """The runtime for agent computer use: none, local, or sandbox."""
+    live_mode_system_prompt: str = LIVE_MODE_SYSTEM_PROMPT
     sandbox_cfg: dict = field(default_factory=dict)
     tool_providers: list[ToolProvider] = field(default_factory=list)
     """Decoupled tool providers injected by the caller.
@@ -838,7 +840,7 @@ async def _handle_webchat(
 
 def _apply_llm_safety_mode(config: MainAgentBuildConfig, req: ProviderRequest) -> None:
     if config.safety_mode_strategy == "system_prompt":
-        req.system_prompt = f"{LLM_SAFETY_MODE_SYSTEM_PROMPT}\n\n{req.system_prompt}"
+        req.system_prompt = f"{config.llm_safety_mode_system_prompt}\n\n{req.system_prompt}"
     else:
         logger.warning(
             "Unsupported llm_safety_mode strategy: %s.",
@@ -1135,7 +1137,7 @@ async def build_main_agent(
 
     action_type = event.get_extra("action_type")
     if action_type == "live":
-        req.system_prompt += f"\n{LIVE_MODE_SYSTEM_PROMPT}\n"
+        req.system_prompt += f"\n{config.live_mode_system_prompt}\n"
 
     streaming_response = config.streaming_response
     if streaming_response and _should_disable_streaming_for_webchat_output(
