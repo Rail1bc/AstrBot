@@ -43,7 +43,7 @@ from astrbot.core.tools.prompts import (
     LIVE_MODE_SYSTEM_PROMPT,
     LLM_SAFETY_MODE_SYSTEM_PROMPT,
     TOOL_CALL_PROMPT,
-    TOOL_CALL_PROMPT_SKILLS_LIKE_MODE,
+    TOOL_CALL_PROMPT_LAZY_LOAD_MODE,
     WEBCHAT_TITLE_GENERATOR_SYSTEM_PROMPT,
     WEBCHAT_TITLE_GENERATOR_USER_PROMPT,
 )
@@ -74,10 +74,10 @@ class MainAgentBuildConfig:
     a timeout error as a tool result will be returned.
     """
     tool_schema_mode: str = "full"
-    """The tool schema mode, can be 'full' or 'skills-like'."""
+    """The tool schema mode, can be 'full' or 'lazy_load'."""
     tool_call_prompt: str = TOOL_CALL_PROMPT
     """The prompt template for tool calls when tool_schema_mode is 'full'."""
-    tool_call_skills_like_mode_prompt: str = TOOL_CALL_PROMPT_SKILLS_LIKE_MODE
+    tool_call_skills_like_mode_prompt: str = TOOL_CALL_PROMPT_LAZY_LOAD_MODE
     """The prompt template for tool calls when tool_schema_mode is 'skills-like'."""
     tool_call_requery_instruction_prompt: str = ""
     """The prompt template for tool calls when tool_schema_mode is 'skills-like' to instruct args re-query."""
