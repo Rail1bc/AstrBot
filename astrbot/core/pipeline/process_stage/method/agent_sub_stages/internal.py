@@ -58,7 +58,7 @@ class InternalAgentSubStage(Stage):
         self.tool_schema_mode: str = settings.get("tool_schema_mode", "full")
         if self.tool_schema_mode not in ("lazy_load", "full"):
             logger.warning(
-                "Unsupported tool_schema_mode: %s, fallback to lazy_load",
+                "Unsupported tool_schema_mode: %s, fallback to full",
                 self.tool_schema_mode,
             )
             self.tool_schema_mode = "full"
@@ -66,8 +66,8 @@ class InternalAgentSubStage(Stage):
             self.max_step = 30
         # 工具调用相关文案
         self.tool_call_prompt: str = settings.get("tool_call_prompt", "")
-        self.tool_call_skills_like_mode_prompt: str = settings.get(
-            "tool_call_skills_like_mode_prompt", ""
+        self.tool_call_lazy_load_mode_prompt: str = settings.get(
+            "tool_call_lazy_load_mode_prompt", ""
         )
         self.tool_call_requery_instruction_prompt: str = settings.get(
             "tool_call_requery_instruction_prompt", ""
@@ -153,7 +153,7 @@ class InternalAgentSubStage(Stage):
             tool_call_timeout=self.tool_call_timeout,
             tool_schema_mode=self.tool_schema_mode,
             tool_call_prompt=self.tool_call_prompt,
-            tool_call_skills_like_mode_prompt=self.tool_call_skills_like_mode_prompt,
+            tool_call_lazy_load_mode_prompt=self.tool_call_lazy_load_mode_prompt,
             tool_call_requery_instruction_prompt=self.tool_call_requery_instruction_prompt,
             tool_call_follow_up_notice_prompt=self.tool_call_follow_up_notice_prompt,
             tool_call_max_step_reached_prompt=self.tool_call_max_step_reached_prompt,

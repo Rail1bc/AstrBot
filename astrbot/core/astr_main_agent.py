@@ -77,10 +77,10 @@ class MainAgentBuildConfig:
     """The tool schema mode, can be 'full' or 'lazy_load'."""
     tool_call_prompt: str = TOOL_CALL_PROMPT
     """The prompt template for tool calls when tool_schema_mode is 'full'."""
-    tool_call_skills_like_mode_prompt: str = TOOL_CALL_PROMPT_LAZY_LOAD_MODE
-    """The prompt template for tool calls when tool_schema_mode is 'skills-like'."""
+    tool_call_lazy_load_mode_prompt: str = TOOL_CALL_PROMPT_LAZY_LOAD_MODE
+    """The prompt template for tool calls when tool_schema_mode is 'lazy_load'."""
     tool_call_requery_instruction_prompt: str = ""
-    """The prompt template for tool calls when tool_schema_mode is 'skills-like' to instruct args re-query."""
+    """The prompt template for tool calls when tool_schema_mode is 'lazy_load' to instruct args re-query."""
     tool_call_follow_up_notice_prompt: str = ""
     """The prompt template for tool calls when user follow up notice."""
     tool_call_max_step_reached_prompt: str = ""
@@ -1130,7 +1130,7 @@ async def build_main_agent(
         tool_prompt = (
             config.tool_call_prompt
             if config.tool_schema_mode == "full"
-            else config.tool_call_skills_like_mode_prompt
+            else config.tool_call_lazy_load_mode_prompt
         )
         req.system_prompt += f"\n{tool_prompt}\n"
 

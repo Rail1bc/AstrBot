@@ -138,7 +138,7 @@ DEFAULT_CONFIG = {
             "after execution, briefly summarize the result for the user; "
             "keep the conversation style consistent."
         ),
-        "tool_call_skills_like_mode_prompt": (
+        "tool_call_lazy_load_mode_prompt": (
             "You MUST NOT return an empty response, especially after invoking a tool."
             " Before calling any tool, provide a brief explanatory message to the user stating the purpose of the tool call."
             " Tool schemas are provided in two stages: first only name and description; "
@@ -3541,21 +3541,21 @@ CONFIG_METADATA_3 = {
                             "provider_settings.agent_runner_type": "local",
                         },
                     },
-                    "provider_settings.tool_call_skills_like_mode_prompt": {
-                        "description": "skills-like工具调用提示词",
+                    "provider_settings.tool_call_lazy_load_mode_prompt": {
+                        "description": "lazy_load工具调用提示词",
                         "type": "string",
-                        "hint": "skills-like模式，具有可调用工具时的注入文案，注入到系统提示词末尾。",
+                        "hint": "lazy_load模式，具有可调用工具时的注入文案，注入到系统提示词末尾。",
                         "condition": {
-                            "provider_settings.tool_schema_mode": "skills_like",
+                            "provider_settings.tool_schema_mode": "lazy_load",
                             "provider_settings.agent_runner_type": "local",
                         },
                     },
                     "provider_settings.tool_call_requery_instruction_prompt": {
-                        "description": "skills-like工具调用二阶段提示词",
+                        "description": "lazy_load工具调用二阶段提示词",
                         "type": "string",
-                        "hint": "skills-like模式下发完整参数的提示文案，支持{tool_names}占位符。",
+                        "hint": "lazy_load模式下发完整参数的提示文案，支持{tool_names}占位符。",
                         "condition": {
-                            "provider_settings.tool_schema_mode": "skills_like",
+                            "provider_settings.tool_schema_mode": "lazy_load",
                             "provider_settings.agent_runner_type": "local",
                         },
                     },

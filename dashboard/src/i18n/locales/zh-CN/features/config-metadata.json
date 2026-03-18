@@ -358,9 +358,9 @@
         },
         "tool_schema_mode": {
           "description": "工具调用模式",
-          "hint": "skills-like 先下发工具名称与描述，再下发参数；full 一次性下发完整参数。",
+          "hint": "lazy_load 先下发工具名称与描述，再下发参数；full 一次性下发完整参数。",
           "labels": [
-            "Skills-like（两阶段）",
+            "Lazy Load（两阶段）",
             "Full（完整参数）"
           ]
         },
@@ -368,13 +368,13 @@
           "description": "工具调用提示词",
           "hint": "具有可调用工具时的注入文案，注入到系统提示词末尾。"
         },
-        "tool_call_skills_like_mode_prompt": {
-          "description": "skills-like工具调用提示词",
-          "hint": "skills-like模式，具有可调用工具时的注入文案，注入到系统提示词末尾。"
+        "tool_call_lazy_load_mode_prompt": {
+          "description": "lazy_load工具调用提示词",
+          "hint": "lazy_load模式，具有可调用工具时的注入文案，注入到系统提示词末尾。"
         },
         "tool_call_requery_instruction_prompt": {
-          "description": "skills-like工具调用二阶段提示词",
-          "hint": "skills-like模式下发完整参数的提示文案，支持{tool_names}占位符。"
+          "description": "lazy_load工具调用二阶段提示词",
+          "hint": "lazy_load模式下发完整参数的提示文案，支持{tool_names}占位符。"
         },
         "tool_call_follow_up_notice_prompt": {
           "description": "追问提示文案",
@@ -397,11 +397,11 @@
         },
         "wake_prefix": {
           "description": "LLM 聊天额外唤醒前缀",
-          "hint": "如果唤醒前缀为 /, 额外聊天唤醒前缀为 chat,则需要 /chat 才会触发 LLM 请求"
+          "hint": "如果唤醒前缀为 /, 额外聊天唤醒前缀为 chat,則需要 /chat 才會觸發 LLM 請求"
         },
         "prompt_prefix": {
           "description": "用户提示词",
-          "hint": "可使用 {{prompt}} 作为用户输入的占位符。如果不输入占位符则代表添加在用户输入的前面。"
+          "hint": "可使用 {{prompt}} 作为用户输入的占位符。如果不输入占位符則代表添加在用户输入的前面。"
         },
         "live_mode_system_prompt": {
           "description": "live模式系统提示词",

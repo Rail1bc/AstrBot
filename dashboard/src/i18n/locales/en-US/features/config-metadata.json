@@ -356,9 +356,9 @@
         },
         "tool_schema_mode": {
           "description": "Tool Schema Mode",
-          "hint": "Skills-like sends name/description first and re-queries for parameters; Full sends the complete schema in one step.",
+          "hint": "lazy_load sends name/description first and re-queries for parameters; Full sends the complete schema in one step.",
           "labels": [
-            "Skills-like (two-stage)",
+            "Lazy Load (two-stage)",
             "Full schema"
           ]
         },
@@ -366,13 +366,13 @@
           "description": "Tool Call Prompt",
           "hint": "Injected text when callable tools are available, appended to the end of the system prompt."
         },
-        "tool_call_skills_like_mode_prompt": {
-          "description": "Skills-like Tool Call Prompt",
-          "hint": "Injected text when callable tools are available in skills-like mode, appended to the end of the system prompt."
+        "tool_call_lazy_load_mode_prompt": {
+          "description": "Lazy Load Tool Call Prompt",
+          "hint": "Injected text when callable tools are available in lazy_load mode, appended to the end of the system prompt."
         },
         "tool_call_requery_instruction_prompt": {
-          "description": "Skills-like Tool Call Second-Stage Prompt",
-          "hint": "Prompt text for requesting full parameters in skills-like mode. Supports the {tool_names} placeholder."
+          "description": "Lazy Load Tool Call Second-Stage Prompt",
+          "hint": "Prompt text for requesting full parameters in lazy_load mode. Supports the {tool_names} placeholder."
         },
         "tool_call_follow_up_notice_prompt": {
           "description": "Follow-up Notice Prompt",
